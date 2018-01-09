@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
 //    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private MainActivity act;
+    static ArrayList<String> list;
+    static {
+         list = new ArrayList<>();
+        String arr[] = {"One", "Two", "Three", "Four", "Five"};
+        for (int i = 0; i < 5; i++) {
+            list.add(arr[i]);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +67,30 @@ public class MainActivity extends AppCompatActivity {
                 operatorMap();
             }
         });
+        findViewById(R.id.btn_operator_flatmap).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                operatorFlatMap();
+            }
+        });
+        findViewById(R.id.btn_operator_filter).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                operatorFilter();
+            }
+        });
+        findViewById(R.id.btn_operator_take).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                operatorTake();
+            }
+        });
+        findViewById(R.id.btn_operator_doOnNext).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                operatorDoOnNext();
+            }
+        });
     }
 
     private void basicObservableCreate() {
@@ -66,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         Observable<String> observable = Observable.create(new ObservableOnSubscribe<String>() {
             @Override
             public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                printCurrentThreadInfo();
                 Logger.i("我来发射数据01 >>> ");
                 emitter.onNext("数据01");
             }
@@ -79,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(String s) {
+                printCurrentThreadInfo();
                 Toast.makeText(act, "接收到>>> " + s, Toast.LENGTH_SHORT).show();
             }
 
@@ -95,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 //        step 03.订阅
         observable.subscribe(observer);
 //        just() 简化写法
-//        fromIterable()    遍历集合多次传入单个的元素
+//        fromIterable()    遍历集合, 拆分成数次传入单个的元素
 //        defer() 当观察者订阅时，才创建Observable, 且针对每个观察者创建都是一个新的Observable
 //        interval() 循环定时触发
 //        range() 发送整数序列
@@ -113,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onNext(String s) {
+                printCurrentThreadInfo();
                 Toast.makeText(act, "接收到>>> " + s, Toast.LENGTH_SHORT).show();
             }
 
@@ -144,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(String s) {
 //                Toast.makeText(act, "接收到>>> " + s, Toast.LENGTH_SHORT).show();
+                printCurrentThreadInfo();
                 Logger.i("接收到>>> " + s);
             }
 
@@ -160,19 +197,24 @@ public class MainActivity extends AppCompatActivity {
         observable.subscribe(observer);
     }
 
+    /**
+     * //        关于操作符:
+     //              |-- map()
+     //              |-- flatMap()
+     //              |-- filter()  按条件过滤数据
+     //              |-- take() 指定输出数量
+     //              |-- doOnNext() 允许我们在每次输出一个元素之前做一些额外的事情
+     */
     private void operatorMap() {
-//        操作符
-//        map()
-//        flatMap()
-//        filter()  按条件过滤数据
-//        take() 指定输出数量
-//        doOnNext() 允许我们在每次输出一个元素之前做一些额外的事情
+
+//        转换被观察数据的形式, 一般用于单个数据的转换操作
         Observable<String> observable = Observable.just("One");
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(new Function<String, Integer>() {
                     @Override
                     public Integer apply(String s) throws Exception {
+                        printCurrentThreadInfo();
                         return s.length();
                     }
                 })
@@ -184,7 +226,118 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(act, "当前线程:" + tag + " map操作 >>> " + str, Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
 
+    private void operatorFlatMap() {
+//       flatMap 重新生成一个数据形式不同的Observable对象, 该方法专门为集合操作提供便利
+        Observable<ArrayList<String>> observable = Observable.just(list);
+        observable.flatMap(new Function<ArrayList<String>, ObservableSource<?>>() {
+            @Override
+            public ObservableSource<String> apply(ArrayList<String> list) throws Exception {
+                printCurrentThreadInfo();
+
+                return Observable.fromIterable(list);
+            }
+        }).subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(Object o) throws Exception {
+                String str = (String) o;
+                String tag = Thread.currentThread().getName();
+                Toast.makeText(act, "当前线程:" + tag + " map操作 >>> " + str, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void operatorFilter() {
+//        定义过滤规则, 根据规则过滤传递给观察者的数据
+        Observable<ArrayList<String>> observable = Observable.just(list);
+        observable.flatMap(new Function<ArrayList<String>, ObservableSource<?>>() {
+            @Override
+            public ObservableSource<String> apply(ArrayList<String> list) throws Exception {
+                printCurrentThreadInfo();
+                return Observable.fromIterable(list);
+            }
+        }).map(new Function<Object, String>() {
+            @Override
+            public String apply(Object o) throws Exception {
+                return (String) o;
+            }
+        }).filter(new Predicate<String>() {
+            @Override
+            public boolean test(String str) throws Exception {
+                printCurrentThreadInfo();
+                return str.length() > 3;    // 只传递长度大于3的字符串
+            }
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String str) throws Exception {
+                        String tag = Thread.currentThread().getName();
+                        Toast.makeText(act, "当前线程:" + tag + " map操作 >>> " + str, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void operatorTake() {
+        Observable<ArrayList<String>> observable = Observable.just(list);
+        observable.flatMap(new Function<ArrayList<String>, ObservableSource<?>>() {
+            @Override
+            public ObservableSource<String> apply(ArrayList<String> list) throws Exception {
+                printCurrentThreadInfo();
+
+                return Observable.fromIterable(list);
+            }
+        }).map(new Function<Object, String>() {
+            @Override
+            public String apply(Object o) throws Exception {
+                return (String) o;
+            }
+        }).take(3)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String str) throws Exception {
+                        String tag = Thread.currentThread().getName();
+                        Toast.makeText(act, "当前线程:" + tag + " map操作 >>> " + str, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void operatorDoOnNext() {
+//        在通知观察者之间的做一些附加操作
+        Observable<ArrayList<String>> observable = Observable.just(list);
+        observable.flatMap(new Function<ArrayList<String>, ObservableSource<?>>() {
+            @Override
+            public ObservableSource<String> apply(ArrayList<String> list) throws Exception {
+                printCurrentThreadInfo();
+
+                return Observable.fromIterable(list);
+            }
+        }).map(new Function<Object, String>() {
+            @Override
+            public String apply(Object o) throws Exception {
+                return (String) o;
+            }
+        }).take(3)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Logger.i("附加操作>>> ");
+                    }
+                })
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String str) throws Exception {
+                        String tag = Thread.currentThread().getName();
+                        Toast.makeText(act, "当前线程:" + tag + " map操作 >>> " + str, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     /**
@@ -204,19 +357,26 @@ public class MainActivity extends AppCompatActivity {
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                printCurrentThreadInfo();
                 Logger.i("当前线程: " + Thread.currentThread().getName());
+
                 emitter.onNext(6);  // 事件的生产过程
             }
         }).subscribeOn(Schedulers.io())     // 生产者线程
-            .observeOn(AndroidSchedulers.mainThread())  // 消费者线程
-            .subscribe(new Consumer<Integer>() { // 观察者触发消费
-                @Override
-                public void accept(Integer integer) throws Exception {  // 事件的消费过程
-                    Logger.i("当前线程: " + Thread.currentThread().getName());
-                    Logger.i(integer + "");
-                }
-            });
+                .observeOn(AndroidSchedulers.mainThread())  // 消费者线程
+                .subscribe(new Consumer<Integer>() { // 观察者触发消费
+                    @Override
+                    public void accept(Integer integer) throws Exception {  // 事件的消费过程
+                        printCurrentThreadInfo();
+                        Logger.i(integer + "");
+                    }
+
+                });
     }
 
+    private void printCurrentThreadInfo() {
+        String tag = Thread.currentThread().getName();
+        Logger.i("当前线程: " + tag);
+    }
 
 }
