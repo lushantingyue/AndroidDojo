@@ -1,18 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="cn.lushantingyue.rxjavademo.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/btn_start_rxjava"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="RxJava Start>>>" />
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:id="@+id/basic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="基本使用" />
+
+    <Button
+        android:id="@+id/basic_just"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="基本使用 -- just" />
+
+    <Button
+        android:id="@+id/basic_fromiterable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="基本使用 -- fromIterable" />
+
+    <Button
+        android:id="@+id/btn_operator_map"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="map操作符" />
+
+    <Button
+        android:id="@+id/btn_operator_flatmap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="flatmap操作符" />
+
+    <Button
+        android:id="@+id/btn_operator_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="filter操作符" />
+
+    <Button
+        android:id="@+id/btn_operator_take"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="take操作符" />
+
+    <Button
+        android:id="@+id/btn_operator_doOnNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="doOnNext操作符" />
+</LinearLayout>
