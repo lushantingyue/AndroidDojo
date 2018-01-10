@@ -16,6 +16,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    // 兼容至 Java8语法
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 dependencies {
@@ -29,5 +35,5 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.1.8'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-    compile 'com.orhanobut:logger:1.10'
+    compile 'com.orhanobut:logger:2.1.1'
 }

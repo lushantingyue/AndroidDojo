@@ -1,11 +1,17 @@
 package cn.lushantingyue.rxjavademo;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 
 import java.util.ArrayList;
 
@@ -39,6 +45,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
+                .showThreadInfo(true)  // (Optional) Whether to show thread info or not. Default true
+                .methodCount(2)         // (Optional) How many method line to show. Default 2
+                .methodOffset(3)        // (Optional) Skips some method invokes in stack trace. Default 5
+//        .logStrategy(customLog) // (Optional) Changes the log strategy to print out. Default LogCat
+                .tag("RetrofitDemo")   // (Optional) Custom tag for each log. Default PRETTY_LOGGER
+                .build();
+        Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
+
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
+
+
         act = this;
         findViewById(R.id.btn_start_rxjava).setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
@@ -89,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 operatorDoOnNext();
+            }
+        });
+        findViewById(R.id.lambda).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                act.startActivity(new Intent(act, RetroLamdaActivity.class));
             }
         });
     }

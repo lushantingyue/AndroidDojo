@@ -62,4 +62,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="doOnNext操作符" />
+
+    <Button
+        android:id="@+id/lambda"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lambda表达式"/>
+
 </LinearLayout>
