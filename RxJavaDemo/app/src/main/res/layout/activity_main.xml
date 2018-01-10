@@ -65,8 +65,10 @@
 
     <Button
         android:id="@+id/lambda"
+        android:layout_marginTop="6dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/orange"
         android:text="Lambda表达式"/>
 
 </LinearLayout>

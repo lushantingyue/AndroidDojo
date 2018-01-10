@@ -21,6 +21,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -29,7 +30,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private final CompositeDisposable disposables = new CompositeDisposable();
+    private final CompositeDisposable disposables = new CompositeDisposable();
 
     private MainActivity act;
     static ArrayList<String> list;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
             list.add(arr[i]);
         }
     }
+
+    private Disposable subscriber09;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +123,14 @@ public class MainActivity extends AppCompatActivity {
                 act.startActivity(new Intent(act, RetroLamdaActivity.class));
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        for (int i=0; i < disposables.size(); i++) {
+//            disposables.clear();
+//        }
     }
 
     private void basicObservableCreate() {
@@ -339,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
     private void operatorDoOnNext() {
 //        在通知观察者之间的做一些附加操作
         Observable<ArrayList<String>> observable = Observable.just(list);
-        observable.flatMap(new Function<ArrayList<String>, ObservableSource<?>>() {
+        subscriber09 = observable.flatMap(new Function<ArrayList<String>, ObservableSource<?>>() {
             @Override
             public ObservableSource<String> apply(ArrayList<String> list) throws Exception {
                 printCurrentThreadInfo();
@@ -367,6 +378,8 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(act, "当前线程:" + tag + " map操作 >>> " + str, Toast.LENGTH_SHORT).show();
                     }
                 });
+
+//         disposables.add(subscriber09);
     }
 
     /**
@@ -399,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
                         printCurrentThreadInfo();
                         Logger.i(integer + "");
                     }
-
                 });
     }
 
