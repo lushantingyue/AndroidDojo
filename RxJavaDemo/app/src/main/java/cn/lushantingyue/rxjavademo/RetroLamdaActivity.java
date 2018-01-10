@@ -14,6 +14,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
+import io.reactivex.functions.BiConsumer;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -113,21 +114,17 @@ public class RetroLamdaActivity extends AppCompatActivity implements View.OnClic
             }
         };
 
-//        BiConsumer twoAction = new BiConsumer<>() {
-//            @Override
-//            public void accept(Object o, Object o2) throws Exception {
-//                Logger.d( "completed");
-//            }
-//        };
+        BiConsumer twoAction = new BiConsumer<String,String>() {
+
+            @Override
+            public void accept(String s, String s2) throws Exception {
+
+            }
+        };
 
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(new Function<List<String>, ObservableSource<String>>() {
-                    @Override
-                    public ObservableSource<String> apply(List<String> list) throws Exception {
-                        return Observable.fromIterable(list);
-                    }
-                })
+                .flatMap(list -> Observable.fromIterable(list))
         .subscribe(onNextAction, onErrorAction, onCompletedAction);
     }
 
