@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group>
+        <item
+            android:id="@+id/nickname"
+            android:icon="@mipmap/about_me"
+            android:title="昵称" />
+        <item
+            android:id="@+id/contact"
+            android:icon="@mipmap/contact"
+            android:title="联系我" />
+        <item
+            android:id="@+id/message"
+            android:icon="@mipmap/tech"
+            android:title="技术领域" />
+    </group>
+</menu>
