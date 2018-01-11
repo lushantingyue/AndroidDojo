@@ -129,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 豆瓣电影API：https://api.douban.com/v2/movie/in_theaters
+     */
     private void loadData() {
 //        act.getDataDir("sampledata")
         String jsonData = getAsset2("douban_movie.json");
