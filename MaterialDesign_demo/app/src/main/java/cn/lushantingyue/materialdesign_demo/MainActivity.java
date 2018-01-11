@@ -1,6 +1,7 @@
 package cn.lushantingyue.materialdesign_demo;
 
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,20 +14,27 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.MovieInfo;
 
 public class MainActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
     private MainActivity act;
+
+    ArrayList<Movie> movies = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +138,23 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
         MovieInfo res = gson.fromJson(jsonData, MovieInfo.class);
         String title = res.getSubjects().get(0).getTitle();
+        ArrayList<Movie> moviesBean = res.getSubjects();
+        movies.addAll(moviesBean);
+        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
+                .showThreadInfo(true)  // (Optional) Whether to show thread info or not. Default true
+                .methodCount(2)         // (Optional) How many method line to show. Default 2
+                .methodOffset(3)        // (Optional) Skips some method invokes in stack trace. Default 5
+                .tag("MD_demo")   // (Optional) Custom tag for each log. Default PRETTY_LOGGER
+                .build();
+        Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
         Logger.i(title);
+        Logger.i(movies.size() + "");
+        Toast.makeText(act, title, Toast.LENGTH_SHORT).show();
     }
 
     @Override
