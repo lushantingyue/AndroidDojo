@@ -1,5 +1,6 @@
 package cn.lushantingyue.materialdesign_demo;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -8,7 +9,19 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.orhanobut.logger.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+
+import cn.lushantingyue.materialdesign_demo.bean.MovieInfo;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToogle);
 
         // 设置抽屉布局导航视图
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
+        final NavigationView mNavigationView = (NavigationView) findViewById(R.id.navigation_view);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -65,5 +78,68 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDrawerLayout.openDrawer(mNavigationView);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+
+    private String getAsset(String fileName) {
+        AssetManager am = getResources().getAssets();
+        InputStream is = null;
+        try {
+            is = am.open(fileName, AssetManager.ACCESS_BUFFER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Scanner(is).useDelimiter("\\Z").next();
+    }
+
+    private String getAsset2(String fileName) {
+        String Result = "";
+        try {
+            InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line = "";
+
+            while ((line = bufReader.readLine()) != null) {
+                Result += line;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+        }
+        return Result;
+    }
+
+
+    private void loadData() {
+//        act.getDataDir("sampledata")
+        String jsonData = getAsset2("douban_movie.json");
+//        JsonObject doubanMovies = new JsonParser().parse(jsonData)
+//                                                                    .getAsJsonObject();
+//        doubanMovies.get("subjects");
+        Gson gson = new Gson();
+        MovieInfo res = gson.fromJson(jsonData, MovieInfo.class);
+        String title = res.getSubjects().get(0).getTitle();
+        Logger.i(title);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
