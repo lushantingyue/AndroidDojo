@@ -18,7 +18,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize" />
+            android:minHeight="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_menu"
+            app:title="豆瓣电影资讯"
+            app:titleTextColor="@color/colorCafe"/>
 
         <FrameLayout
             android:id="@+id/frame_content"
@@ -32,5 +35,12 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/drawer" />
+        app:menu="@menu/drawer"
+        app:itemIconTint="@color/Grass"
+        app:itemTextColor="@color/titleDarkGray"/>
+    <!-- app:headerLayout          就是给导航栏增加一个头部Layout。-->
+    <!-- app:menu                         就是对应菜单项的选择条目。-->
+    <!-- app:itemBackground — 设置菜单项的背景-->
+    <!-- app:itemIconTint      — 设置菜单项的图标的着色-->
+    <!-- app:itemTextColor    — 这只菜单项目的文本颜色-->
 </android.support.v4.widget.DrawerLayout>

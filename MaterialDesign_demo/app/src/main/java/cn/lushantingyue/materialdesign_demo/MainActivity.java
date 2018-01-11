@@ -1,6 +1,5 @@
 package cn.lushantingyue.materialdesign_demo;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -22,12 +21,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         act = this;
 
+        /**
+         *  android.support.v7.widget.Toolbar的使用
+         */
 //        CoordinatorLayout，AppBarLayout，CollapsingToolbarLayout，Toolbar，TabLayout
         // 初始化Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitleTextColor(Color.WHITE);
+//        mToolbar.setTitleTextColor(Color.WHITE);
+        mToolbar.inflateMenu(R.menu.toolbar_menu);
+
         setSupportActionBar(mToolbar);
 
+        /**
+         *  抽屉布局Drawerlayout + NavigationView导航视图配合使用
+         */
         // 初始化抽屉布局
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToogle = new ActionBarDrawerToggle(act, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);

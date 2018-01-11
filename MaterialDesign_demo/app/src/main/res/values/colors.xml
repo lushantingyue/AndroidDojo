@@ -4,5 +4,36 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="colorDouban">#FF4081</color>
+    <color name="colorAccentDouban">#E9D08E</color>
+
+    <color name="themeDouban">#00B51D</color>
+    <color name="Grass">#539200</color>
+    <color name="lightGrass">#abeeab</color>
+
+    <color name="titleDarkGray">#494949</color>
+    <!--分类栏目主题-->
+    <color name="colorCafe">	#584029</color>
+    <!--Skyblue:	#278DCE-->
+    <!--LightOrange:	#EEBA82-->
+    <!--GrassGreen: #0E8E96-->
+    <!--DarkOrange: #DE4E04-->
+    <!--LightGrass:	#7AA89B-->
+    <!--FontGray:	#5B5B5B-->
+    <!--GrassGreen:	#539200-->
+
+    <!--DoubanGreen: #00B51D-->
+
+    <!--通用部分-->
+    <color name="BgGray">#F7F7F7</color>
+
+    <!--标题主题-->
+    <color name="titleSky">#37a</color>
+    <color name="titleGreen">#072</color>
+    <color name="titleGrass">#42bd56</color>
+    <color name="titleDark">#494949</color>
+    <color name="titleGray">#9b9b9b</color>
+
+    <!--按钮主题-->
+    <!--btnOrange: #F97927-->
+    <!--btnGreen:    #42BD56-->
 </resources>
