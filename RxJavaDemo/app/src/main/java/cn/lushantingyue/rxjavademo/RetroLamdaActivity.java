@@ -114,18 +114,10 @@ public class RetroLamdaActivity extends AppCompatActivity implements View.OnClic
             }
         };
 
-        BiConsumer twoAction = new BiConsumer<String,String>() {
-
-            @Override
-            public void accept(String s, String s2) throws Exception {
-
-            }
-        };
-
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(list -> Observable.fromIterable(list))
-        .subscribe(onNextAction, onErrorAction, onCompletedAction);
+                .subscribe(onNextAction, onErrorAction, onCompletedAction);
     }
 
     private void setResult(String result) {
