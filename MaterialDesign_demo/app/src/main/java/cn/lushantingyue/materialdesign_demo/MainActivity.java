@@ -1,7 +1,5 @@
 package cn.lushantingyue.materialdesign_demo;
 
-import android.content.res.AssetManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -9,6 +7,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -20,11 +19,8 @@ import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.MovieInfo;
@@ -49,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         // 初始化Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 //        mToolbar.setTitleTextColor(Color.WHITE);
-        mToolbar.inflateMenu(R.menu.toolbar_menu);
 
         setSupportActionBar(mToolbar);
 
@@ -92,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(mNavigationView);
             }
         });
+
     }
 
     @Override
@@ -100,18 +96,13 @@ public class MainActivity extends AppCompatActivity {
         loadData();
     }
 
-    private String getAsset(String fileName) {
-        AssetManager am = getResources().getAssets();
-        InputStream is = null;
-        try {
-            is = am.open(fileName, AssetManager.ACCESS_BUFFER);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new Scanner(is).useDelimiter("\\Z").next();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
     }
 
-    private String getAsset2(String fileName) {
+    private String getAsset(String fileName) {
         String Result = "";
         try {
             InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
@@ -133,11 +124,7 @@ public class MainActivity extends AppCompatActivity {
      * 豆瓣电影API：https://api.douban.com/v2/movie/in_theaters
      */
     private void loadData() {
-//        act.getDataDir("sampledata")
-        String jsonData = getAsset2("douban_movie.json");
-//        JsonObject doubanMovies = new JsonParser().parse(jsonData)
-//                                                                    .getAsJsonObject();
-//        doubanMovies.get("subjects");
+        String jsonData = getAsset("douban_movie.json");
         Gson gson = new Gson();
         MovieInfo res = gson.fromJson(jsonData, MovieInfo.class);
         String title = res.getSubjects().get(0).getTitle();

@@ -9,6 +9,7 @@
     <color name="themeDouban">#00B51D</color>
     <color name="Grass">#539200</color>
     <color name="lightGrass">#abeeab</color>
+    <color name="LightGreen">#7AA89B</color>
 
     <color name="titleDarkGray">#494949</color>
     <!--分类栏目主题-->
@@ -34,6 +35,8 @@
     <color name="titleGray">#9b9b9b</color>
 
     <!--按钮主题-->
+    <color name="btnOrange">#F97927</color>
+    <color name="btnGreen">#42BD56</color>
     <!--btnOrange: #F97927-->
     <!--btnGreen:    #42BD56-->
 </resources>
