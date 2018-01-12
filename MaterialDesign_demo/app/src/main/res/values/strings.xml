@@ -2,4 +2,10 @@
     <string name="app_name">MaterialDesign_demo</string>
     <string name="drawer_close">关闭</string>
     <string name="drawer_open">打开</string>
+
+    <string name="reading">读书</string>
+    <string name="movies">电影</string>
+    <string name="music">音乐</string>
+    <string name="city">同城</string>
+    <string name="group">小组</string>
 </resources>

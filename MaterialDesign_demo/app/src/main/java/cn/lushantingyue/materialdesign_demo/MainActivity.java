@@ -2,15 +2,22 @@ package cn.lushantingyue.materialdesign_demo;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -33,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<Movie> movies = new ArrayList<>();
     private DrawerLayout mDrawerLayout;
+    private CoordinatorLayout root_layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +103,34 @@ public class MainActivity extends AppCompatActivity {
 //                return false;
 //            }
 //        });
+        root_layout = (CoordinatorLayout) findViewById(R.id.root_layout);
 
+        final CollapsingToolbarLayout mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
+
+        final LinearLayout head_layout = findViewById(R.id.head_layout);
+        AppBarLayout app_bar_layout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+        app_bar_layout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {  // 监听AppBarLayout的滑动状态
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if(verticalOffset <= -head_layout.getHeight()/2) {
+                    mCollapsingToolbarLayout.setTitle("庐山听月的豆瓣空间");
+                } else {
+                    mCollapsingToolbarLayout.setTitle("");
+                }
+            }
+        });
+        TabLayout slidingTabs = findViewById(R.id.sliding_tabs);
+        NestedScrollView nestedScrollView = findViewById(R.id.nestedScrollView);
+        ViewPager viewPager = findViewById(R.id.viewpager);
+        ViewPagerAdapter vpAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this);
+        viewPager.setAdapter(vpAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener
+                (slidingTabs));
+        slidingTabs.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener
+                (viewPager));
+//        CollapsingToolbarLayout
+//        mCollapsingToolbarLayout.setContentScrim();
+//        AppBarLayout
     }
 
     @Override
@@ -114,18 +149,18 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.share:
-                Snackbar.make(mDrawerLayout, "share", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(root_layout, "share", Snackbar.LENGTH_SHORT).show();
                 return true;
 //                break;
             case R.id.more:
-                Snackbar.make(mDrawerLayout, "more", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(root_layout, "more", Snackbar.LENGTH_SHORT).show();
                 return true;
             case R.id.about:
-                Snackbar.make(mDrawerLayout, "about", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(root_layout, "about", Snackbar.LENGTH_SHORT).show();
                 return true;
             case R.id.thanks:
                 // SnackBar的使用依赖于根布局
-                Snackbar.make(mDrawerLayout, "thanks", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(root_layout, "thanks", Snackbar.LENGTH_SHORT).show();
                 return true;
 //                break;
             default:
