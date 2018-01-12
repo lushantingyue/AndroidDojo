@@ -3,6 +3,7 @@ package cn.lushantingyue.materialdesign_demo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private MainActivity act;
 
     ArrayList<Movie> movies = new ArrayList<>();
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
          *  抽屉布局Drawerlayout + NavigationView导航视图配合使用
          */
         // 初始化抽屉布局
-        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle mDrawerToogle = new ActionBarDrawerToggle(act, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
         mDrawerToogle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToogle);
@@ -87,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(mNavigationView);
             }
         });
+//        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                return false;
+//            }
+//        });
 
     }
 
@@ -100,6 +108,30 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share:
+                Snackbar.make(mDrawerLayout, "share", Snackbar.LENGTH_SHORT).show();
+                return true;
+//                break;
+            case R.id.more:
+                Snackbar.make(mDrawerLayout, "more", Snackbar.LENGTH_SHORT).show();
+                return true;
+            case R.id.about:
+                Snackbar.make(mDrawerLayout, "about", Snackbar.LENGTH_SHORT).show();
+                return true;
+            case R.id.thanks:
+                // SnackBar的使用依赖于根布局
+                Snackbar.make(mDrawerLayout, "thanks", Snackbar.LENGTH_SHORT).show();
+                return true;
+//                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private String getAsset(String fileName) {

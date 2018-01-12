@@ -9,6 +9,9 @@
         <item name="colorPrimary">@color/lightGrass</item>
         <item name="colorPrimaryDark">@color/Grass</item>
         <item name="colorAccent">@color/colorAccentDouban</item>
+
+        <!--解决下拉菜单覆盖ToolBar问题-->
+        <item name="overlapAnchor">false</item>
     </style>
 
 </resources>

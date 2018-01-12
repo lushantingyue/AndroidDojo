@@ -14,4 +14,22 @@
         android:orderInCategory="100"
         android:title="更多"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/about"
+        android:title="关于"
+        android:orderInCategory="110"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/thanks"
+        android:title="感谢"
+        android:orderInCategory="120"
+        app:showAsAction="never"/>
+
+    <!-- showAsAction这个属性的值有：-->
+    <!-- 1、always：使菜单项一直显示在ToolBar上。-->
+    <!-- 2、ifRoom：如果有足够的空间，这个值会使菜单项显示在ToolBar上。-->
+    <!-- 3、never：使菜单项永远都不出现在ToolBar上,在下拉选项中显示。-->
+    <!-- 4、withText：使菜单项和它的图标，菜单文本一起显示。-->
 </menu>
