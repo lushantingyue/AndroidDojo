@@ -12,6 +12,8 @@ public class MovieInfo {
     private int start;
     private int total;
 
+    private String title;
+
     private ArrayList<Movie> subjects;
 
     public int getCount() {
@@ -24,6 +26,10 @@ public class MovieInfo {
 
     public int getTotal() {
         return total;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public ArrayList<Movie> getSubjects() {
