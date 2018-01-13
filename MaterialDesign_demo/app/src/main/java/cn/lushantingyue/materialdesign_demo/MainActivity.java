@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 //        CoordinatorLayout，AppBarLayout，CollapsingToolbarLayout，Toolbar，TabLayout
         // 初始化Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
 //        mToolbar.setTitleTextColor(Color.WHITE);
 
         setSupportActionBar(mToolbar);
@@ -121,13 +123,32 @@ public class MainActivity extends AppCompatActivity {
         });
         TabLayout slidingTabs = findViewById(R.id.sliding_tabs);
         NestedScrollView nestedScrollView = findViewById(R.id.nestedScrollView);
-        ViewPager viewPager = findViewById(R.id.viewpager);
-        ViewPagerAdapter vpAdapter = new ViewPagerAdapter(getSupportFragmentManager(), this);
+        final ViewPager viewPager = findViewById(R.id.viewpager);
+        ViewPagerAdapter vpAdapter = new ViewPagerAdapter(getSupportFragmentManager(), act);
         viewPager.setAdapter(vpAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener
-                (slidingTabs));
-        slidingTabs.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener
-                (viewPager));
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(slidingTabs));
+        slidingTabs.setupWithViewPager(viewPager);
+//        slidingTabs.setSelectedTabIndicatorColor(getResources().getColor(R.color.titleGrass));
+        viewPager.setCurrentItem(0, false);
+//        slidingTabs.setOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
+        slidingTabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int pos = tab.getPosition();
+                viewPager.setCurrentItem(pos, true);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
 //        CollapsingToolbarLayout
 //        mCollapsingToolbarLayout.setContentScrim();
 //        AppBarLayout

@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Administrator on 2018/1/12 16.
@@ -12,20 +16,24 @@ import android.support.v4.app.FragmentPagerAdapter;
  * ProjectName:
  */
 
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     final int PAGE_COUNT = 5;
     private String tabTitles[] = new String[]{"读书", "电影", "音乐", "小组", "同城"};
+    private List<Fragment> fragments = new ArrayList<>();
     private Context context;
 
     public ViewPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
+        for (int i = 0; i < PAGE_COUNT; i++) {
+            this.fragments.add(PageFragment.newInstance(i + 1));
+        }
     }
 
     @Override
     public Fragment getItem(int position) {
-        return PageFragment.newInstance(position + 1);
+        return fragments.get(position);
     }
 
     @Override
@@ -37,4 +45,5 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return tabTitles[position];
     }
+
 }
