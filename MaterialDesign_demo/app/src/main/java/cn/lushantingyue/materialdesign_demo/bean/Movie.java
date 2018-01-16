@@ -23,24 +23,24 @@ public class Movie {
      * id : 26654146
      */
 
-    private Bean.RatingBean rating;
+    private Movie.RatingBean rating;
     private String title;
     private int collect_count;
     private String original_title;
     private String subtype;
     private String year;
-    private Bean.ImagesBean images;
+    private Movie.ImagesBean images;
     private String alt;
     private String id;
     private List<String> genres;
-    private List<Bean.CastsBean> casts;
-    private List<Bean.DirectorsBean> directors;
+    private List<Movie.CastsBean> casts;
+    private List<Movie.DirectorsBean> directors;
 
-    public Bean.RatingBean getRating() {
+    public Movie.RatingBean getRating() {
         return rating;
     }
 
-    public void setRating(Bean.RatingBean rating) {
+    public void setRating(Movie.RatingBean rating) {
         this.rating = rating;
     }
 
@@ -84,11 +84,11 @@ public class Movie {
         this.year = year;
     }
 
-    public Bean.ImagesBean getImages() {
+    public Movie.ImagesBean getImages() {
         return images;
     }
 
-    public void setImages(Bean.ImagesBean images) {
+    public void setImages(Movie.ImagesBean images) {
         this.images = images;
     }
 
@@ -116,19 +116,19 @@ public class Movie {
         this.genres = genres;
     }
 
-    public List<Bean.CastsBean> getCasts() {
+    public List<Movie.CastsBean> getCasts() {
         return casts;
     }
 
-    public void setCasts(List<Bean.CastsBean> casts) {
+    public void setCasts(List<Movie.CastsBean> casts) {
         this.casts = casts;
     }
 
-    public List<Bean.DirectorsBean> getDirectors() {
+    public List<Movie.DirectorsBean> getDirectors() {
         return directors;
     }
 
-    public void setDirectors(List<Bean.DirectorsBean> directors) {
+    public void setDirectors(List<Movie.DirectorsBean> directors) {
         this.directors = directors;
     }
 
@@ -223,7 +223,7 @@ public class Movie {
          */
 
         private String alt;
-        private Bean.CastsBean.AvatarsBean avatars;
+        private Movie.CastsBean.AvatarsBean avatars;
         private String name;
         private String id;
 
@@ -235,11 +235,11 @@ public class Movie {
             this.alt = alt;
         }
 
-        public Bean.CastsBean.AvatarsBean getAvatars() {
+        public Movie.CastsBean.AvatarsBean getAvatars() {
             return avatars;
         }
 
-        public void setAvatars(Bean.CastsBean.AvatarsBean avatars) {
+        public void setAvatars(Movie.CastsBean.AvatarsBean avatars) {
             this.avatars = avatars;
         }
 
@@ -305,7 +305,7 @@ public class Movie {
          */
 
         private String alt;
-        private Bean.DirectorsBean.AvatarsBeanX avatars;
+        private Movie.DirectorsBean.AvatarsBeanX avatars;
         private String name;
         private String id;
 
@@ -317,11 +317,11 @@ public class Movie {
             this.alt = alt;
         }
 
-        public Bean.DirectorsBean.AvatarsBeanX getAvatars() {
+        public Movie.DirectorsBean.AvatarsBeanX getAvatars() {
             return avatars;
         }
 
-        public void setAvatars(Bean.DirectorsBean.AvatarsBeanX avatars) {
+        public void setAvatars(Movie.DirectorsBean.AvatarsBeanX avatars) {
             this.avatars = avatars;
         }
 

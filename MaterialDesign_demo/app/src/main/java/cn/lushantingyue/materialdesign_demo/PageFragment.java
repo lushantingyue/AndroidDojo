@@ -11,6 +11,10 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.lushantingyue.materialdesign_demo.bean.Movie;
+import cn.lushantingyue.materialdesign_demo.multitype.MovieViewBinder;
+import me.drakeet.multitype.MultiTypeAdapter;
+
 /**
  * Created by Administrator on 2018/1/12 16.
  * Responsibilities:
@@ -23,6 +27,7 @@ public class PageFragment extends Fragment {
     public static final String ARG_PAGE = "ARG_PAGE";
     private int mPage;
     private RecyclerView lv;
+    private MultiTypeAdapter adapter;
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -51,11 +56,19 @@ public class PageFragment extends Fragment {
 
         lv.setLayoutManager(layoutManager);
 
-        List<String> list = new ArrayList<String>();
-        for (int i = 0; i < 100; i++) {
-            list.add(i + "");
+        if(mPage == 2) {
+            adapter = new MultiTypeAdapter();
+            adapter.register(Movie.class, new MovieViewBinder());
+            lv.setAdapter(adapter);
+            // 加载数据
+            
+        } else {
+            List<String> list = new ArrayList<String>();
+            for (int i = 0; i < 100; i++) {
+                list.add(i + "");
+            }
+            lv.setAdapter(new MyAdapter(list));
         }
-        lv.setAdapter(new MyAdapter(list));
         return view;
     }
 }
