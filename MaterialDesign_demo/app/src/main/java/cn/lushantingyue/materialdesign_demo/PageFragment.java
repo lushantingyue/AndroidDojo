@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
+import cn.lushantingyue.materialdesign_demo.bean.MovieInfo;
 import cn.lushantingyue.materialdesign_demo.multitype.MovieViewBinder;
 import me.drakeet.multitype.MultiTypeAdapter;
 
@@ -56,12 +57,22 @@ public class PageFragment extends Fragment {
 
         lv.setLayoutManager(layoutManager);
 
-        if(mPage == 2) {
-            adapter = new MultiTypeAdapter();
-            adapter.register(Movie.class, new MovieViewBinder());
-            lv.setAdapter(adapter);
-            // 加载数据
-            
+        adapter = new MultiTypeAdapter();
+        adapter.register(Movie.class, new MovieViewBinder());
+        lv.setAdapter(adapter);
+        // 加载数据
+
+            /* 模拟加载数据，也可以稍后再加载，然后使用
+         * adapter.notifyDataSetChanged() 刷新列表 */
+        if (mPage == 2) {
+            ArrayList<Movie> items = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                items.add(new Movie().setTitle("解忧杂货店"));
+                items.add(new Movie().setTitle("前任3"));
+                items.add(new Movie().setTitle("勇敢者游戏：决战丛林"));
+            }
+            adapter.setItems(items);
+            adapter.notifyDataSetChanged();
         } else {
             List<String> list = new ArrayList<String>();
             for (int i = 0; i < 100; i++) {

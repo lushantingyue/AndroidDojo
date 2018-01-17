@@ -48,8 +48,9 @@ public class Movie {
         return title;
     }
 
-    public void setTitle(String title) {
+    public Movie setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     public int getCollect_count() {

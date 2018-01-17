@@ -99,12 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.openDrawer(mNavigationView);
             }
         });
-//        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                return false;
-//            }
-//        });
+
         root_layout = (CoordinatorLayout) findViewById(R.id.root_layout);
 
         final CollapsingToolbarLayout mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar_layout);
