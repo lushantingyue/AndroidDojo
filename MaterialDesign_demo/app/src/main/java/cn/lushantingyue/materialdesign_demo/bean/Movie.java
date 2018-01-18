@@ -113,8 +113,9 @@ public class Movie {
         return genres;
     }
 
-    public void setGenres(List<String> genres) {
+    public Movie setGenres(List<String> genres) {
         this.genres = genres;
+        return this;
     }
 
     public List<Movie.CastsBean> getCasts() {

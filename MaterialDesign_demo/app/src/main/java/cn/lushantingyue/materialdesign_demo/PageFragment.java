@@ -7,8 +7,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.FormatStrategy;
+import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
@@ -29,6 +40,7 @@ public class PageFragment extends Fragment {
     private int mPage;
     private RecyclerView lv;
     private MultiTypeAdapter adapter;
+    ArrayList<Movie> movies = new ArrayList<>();
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -42,6 +54,9 @@ public class PageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
+        if(mPage == 2) {
+            loadData();
+        }
     }
 
     @Override
@@ -65,13 +80,14 @@ public class PageFragment extends Fragment {
             /* 模拟加载数据，也可以稍后再加载，然后使用
          * adapter.notifyDataSetChanged() 刷新列表 */
         if (mPage == 2) {
-            ArrayList<Movie> items = new ArrayList<>();
-            for (int i = 0; i < 20; i++) {
-                items.add(new Movie().setTitle("解忧杂货店"));
-                items.add(new Movie().setTitle("前任3"));
-                items.add(new Movie().setTitle("勇敢者游戏：决战丛林"));
-            }
-            adapter.setItems(items);
+//            ArrayList<Movie> items = new ArrayList<>();
+//            for (int i = 0; i < 20; i++) {
+//                items.add(new Movie().setTitle("解忧杂货店").setGenres(Arrays.asList("喜剧", "爱情")).setImages(new Movie.ImagesBean().setLarge("https://img3.doubanio.com/view/photo/s_ratio_poster/public/p2503544593.jpg")) );
+//                items.add(new Movie().setTitle("前任3").setGenres(Arrays.asList("动作", "奇幻", "冒险")));
+//                items.add(new Movie().setTitle("勇敢者游戏：决战丛林").setGenres(Arrays.asList("剧情", "历史", "战争")));
+//            }
+
+            adapter.setItems(movies);
             adapter.notifyDataSetChanged();
         } else {
             List<String> list = new ArrayList<String>();
@@ -81,5 +97,49 @@ public class PageFragment extends Fragment {
             lv.setAdapter(new MyAdapter(list));
         }
         return view;
+    }
+
+    /**
+     * 豆瓣电影API：https://api.douban.com/v2/movie/in_theaters
+     */
+    private void loadData() {
+        String jsonData = getAsset("douban_movie.json");
+        Gson gson = new Gson();
+        MovieInfo res = gson.fromJson(jsonData, MovieInfo.class);
+        String title = res.getSubjects().get(0).getTitle();
+        ArrayList<Movie> moviesBean = res.getSubjects();
+        movies.addAll(moviesBean);
+        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
+                .showThreadInfo(true)  // (Optional) Whether to show thread info or not. Default true
+                .methodCount(2)         // (Optional) How many method line to show. Default 2
+                .methodOffset(3)        // (Optional) Skips some method invokes in stack trace. Default 5
+                .tag("MD_demo")   // (Optional) Custom tag for each log. Default PRETTY_LOGGER
+                .build();
+        Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
+            @Override
+            public boolean isLoggable(int priority, String tag) {
+                return BuildConfig.DEBUG;
+            }
+        });
+        Logger.i(title);
+        Logger.i(movies.size() + "");
+        Toast.makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getAsset(String fileName) {
+        String Result = "";
+        try {
+            InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
+            BufferedReader bufReader = new BufferedReader(inputReader);
+            String line = "";
+
+            while ((line = bufReader.readLine()) != null) {
+                Result += line;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+        }
+        return Result;
     }
 }
