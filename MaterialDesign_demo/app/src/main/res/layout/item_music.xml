@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="12dp"
+    android:paddingTop="12dp">
+
+    <!--/**-->
+    <!--* rating : {"max":10,"average":"9.5","numRaters":984,"min":0}-->
+    <!--* author : [{"name":"张国荣"}]-->
+    <!--* alt_title :-->
+    <!--* image : https://img1.doubanio.com/spic/s3966287.jpg-->
+    <!--* tags : [{"count":328,"name":"张国荣"},{"count":124,"name":"香港"},{"count":90,"name":"Leslie"},{"count":86,"name":"粤语"},{"count":86,"name":"哥哥"},{"count":69,"name":"張國榮"},{"count":40,"name":"2009"},{"count":37,"name":"最热"}]-->
+    <!--* mobile_link : https://m.douban.com/music/subject/3645475/-->
+    <!--* attrs : {"publisher":["环球"],"singer":["张国荣"],"version":["专辑"],"pubdate":["2009-03-26"],"title":["最热"],"media":["CD"],"tracks":["CD 1 [HITS]\n01. 恋爱交叉\n02. Monica\n03. 柔情蜜意\n04. H2O\n05. 不羁的风\n06. 我愿意\n07. 痴心的我\n08. 黑色午夜\n09. 无心睡眠\n10. 妳在何地\n11. 够了\n12. 最爱\n13. 无需要太多\n14. 侧面\n15. 明星\n16. Miss You Much\nCD 2 [DUET]\n01. 愿能比翼飞 - 邓志玉合唱\n02. 缘份 - 梅艳芳合唱\n03. 心中只有你 - 关菊英合唱\n04. 只怕不再遇上 - 陈洁灵合唱\n05. 谁令你心痴 - 陈洁灵合唱\n06. Miracle - 麦洁文合唱\n07. 沉默是金 - 许冠杰合唱\n08. 兜风心情 - 柏安妮合唱\n09. 我未惊过 - 许冠杰合唱\n10. 深情相拥 - 辛晓琪合唱\n11. 眉来眼去 - 辛晓琪合唱\n12. 当真就好 - 陈淑桦合唱\n13. From Now On - 林忆莲合唱\n14. 幻影+雾之恋 - 谭咏麟合唱\n15. 同步过冬 - 群星合唱\nCD 3 [WORKS]\n01. 片段 - 张国荣词\n02. 爱火 - 张国荣词\n03. 情难自控 - 张国荣词\n04. 想妳 - 张国荣曲\n05. 共创真善美 - 张国荣曲\n06. 沉默是金 - 张国荣曲\n07. 由零开始 - 张国荣曲\n08. 烈火灯蛾 - 张国荣曲词\n09. To You - 张国荣词\n10. 风再起时 - 张国荣曲\n11. 红颜白发 - 张国荣曲\n12. 夜半歌声 - 张国荣曲\n13. 一辈子失去了你 \u2013张国荣曲\n14. 有心人 - 张国荣曲\n15. 红 - 张国荣曲\n16. 意犹未尽 - 张国荣曲\n17. 以后 - 张国荣曲\nDVD\n01. American Pie - 亚洲歌唱大赛参赛歌曲 1977\n02. 够了 - 白金巨星耀保良 1987\n03. 共同渡过 - 白金巨星耀保良 1987\n04. 无心睡眠 - 87年度十大劲歌金曲颁奖礼金曲奖 1988\n05. 贴身 - 第一届国际华裔小姐竞选1988\n06. 热辣辣 - 第一届国际华裔小姐竞选1988\n07. 别话 - 88年TVB台庆 1988\n08. 沉默是金 - 罗文合唱 - 88年TVB台庆 1988\n09. 侧面 - 88年十大劲歌金曲颁奖礼金曲-最受欢迎男歌星1989\n10. Miss You Much - 89年TVB台庆献唱1989\n11. 风再起时 - 89年TVB台庆献唱1989"],"discs":["4"]}-->
+    <!--* title : 最热-->
+    <!--* alt : https://music.douban.com/subject/3645475/-->
+    <!--* id : 3645475-->
+    <!--*/-->
+
+    <TextView
+        android:id="@+id/song"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="5dp"
+        android:text="当你老了"
+        android:textColor="@color/titleSky"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/img_wrap"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/song"
+        android:contentDescription="封面"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/song"
+        android:layout_toEndOf="@id/img_wrap"
+        android:orientation="vertical"
+        android:paddingStart="5dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID: "
+                android:textColor="@color/titleGray" />
+
+            <TextView
+                android:id="@+id/id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ID" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="评分: "
+                android:textColor="@color/titleGray" />
+
+            <TextView
+                android:id="@+id/ratings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="评分"
+                android:textColor="@color/itemOrange" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="歌手: "
+                android:textColor="@color/titleGray" />
+
+            <TextView
+                android:id="@+id/singer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="歌手" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="标签: "
+                android:textColor="@color/titleGray" />
+
+            <TextView
+                android:id="@+id/tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="港台" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -24,7 +24,9 @@ import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.MovieInfo;
+import cn.lushantingyue.materialdesign_demo.bean.Music;
 import cn.lushantingyue.materialdesign_demo.multitype.MovieViewBinder;
+import cn.lushantingyue.materialdesign_demo.multitype.MusicViewBinder;
 import me.drakeet.multitype.MultiTypeAdapter;
 
 /**
@@ -40,7 +42,9 @@ public class PageFragment extends Fragment {
     private int mPage;
     private RecyclerView lv;
     private MultiTypeAdapter adapter;
+
     ArrayList<Movie> movies = new ArrayList<>();
+    ArrayList<Music.MusicsBean> music = new ArrayList<>();
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -56,6 +60,8 @@ public class PageFragment extends Fragment {
         mPage = getArguments().getInt(ARG_PAGE);
         if(mPage == 2) {
             loadData();
+        } else if (mPage == 3) {
+            loadMusic();
         }
     }
 
@@ -71,11 +77,7 @@ public class PageFragment extends Fragment {
         // 设置布局管理器
 
         lv.setLayoutManager(layoutManager);
-
         adapter = new MultiTypeAdapter();
-        adapter.register(Movie.class, new MovieViewBinder());
-        lv.setAdapter(adapter);
-        // 加载数据
 
             /* 模拟加载数据，也可以稍后再加载，然后使用
          * adapter.notifyDataSetChanged() 刷新列表 */
@@ -86,8 +88,17 @@ public class PageFragment extends Fragment {
 //                items.add(new Movie().setTitle("前任3").setGenres(Arrays.asList("动作", "奇幻", "冒险")));
 //                items.add(new Movie().setTitle("勇敢者游戏：决战丛林").setGenres(Arrays.asList("剧情", "历史", "战争")));
 //            }
+            adapter.register(Movie.class, new MovieViewBinder());
+            lv.setAdapter(adapter);
 
             adapter.setItems(movies);
+            adapter.notifyDataSetChanged();
+        } else if(mPage ==3) {
+
+            adapter.register(Music.MusicsBean.class, new MusicViewBinder());
+            lv.setAdapter(adapter);
+
+            adapter.setItems(music);
             adapter.notifyDataSetChanged();
         } else {
             List<String> list = new ArrayList<String>();
@@ -124,6 +135,14 @@ public class PageFragment extends Fragment {
         Logger.i(title);
         Logger.i(movies.size() + "");
         Toast.makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadMusic() {
+        String jsonData = getAsset("douban_music.json");
+        Gson gson = new Gson();
+        Music res = gson.fromJson(jsonData, Music.class);
+        ArrayList<Music.MusicsBean> musicBean = (ArrayList<Music.MusicsBean>) res.getMusics();
+        music.addAll(musicBean);
     }
 
     private String getAsset(String fileName) {
