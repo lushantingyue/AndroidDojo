@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadData();
     }
 
     @Override
@@ -183,51 +182,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private String getAsset(String fileName) {
-        String Result = "";
-        try {
-            InputStreamReader inputReader = new InputStreamReader(getResources().getAssets().open(fileName));
-            BufferedReader bufReader = new BufferedReader(inputReader);
-            String line = "";
-
-            while ((line = bufReader.readLine()) != null) {
-                Result += line;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-        }
-        return Result;
-    }
-
-
-    /**
-     * 豆瓣电影API：https://api.douban.com/v2/movie/in_theaters
-     */
-    private void loadData() {
-        String jsonData = getAsset("douban_movie.json");
-        Gson gson = new Gson();
-        MovieInfo res = gson.fromJson(jsonData, MovieInfo.class);
-        String title = res.getSubjects().get(0).getTitle();
-        ArrayList<Movie> moviesBean = res.getSubjects();
-        movies.addAll(moviesBean);
-        FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
-                .showThreadInfo(true)  // (Optional) Whether to show thread info or not. Default true
-                .methodCount(2)         // (Optional) How many method line to show. Default 2
-                .methodOffset(3)        // (Optional) Skips some method invokes in stack trace. Default 5
-                .tag("MD_demo")   // (Optional) Custom tag for each log. Default PRETTY_LOGGER
-                .build();
-        Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy) {
-            @Override
-            public boolean isLoggable(int priority, String tag) {
-                return BuildConfig.DEBUG;
-            }
-        });
-        Logger.i(title);
-        Logger.i(movies.size() + "");
-        Toast.makeText(act, title, Toast.LENGTH_SHORT).show();
     }
 
     @Override

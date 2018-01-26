@@ -37,6 +37,7 @@ public class LocalData {
         String title = res.getSubjects().get(0).getTitle();
         ArrayList<Movie> moviesBean = res.getSubjects();
         movies.addAll(moviesBean);
+
         FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()
                 .showThreadInfo(true)  // (Optional) Whether to show thread info or not. Default true
                 .methodCount(2)         // (Optional) How many method line to show. Default 2
@@ -52,7 +53,7 @@ public class LocalData {
         Logger.i(title);
         Logger.i(movies.size() + "");
         Logger.i("LocalData >>>");
-        Toast.makeText(act, title, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(act, title, Toast.LENGTH_SHORT).show();
     }
 
     public static void loadMusic(ArrayList<Music.MusicsBean> music, Activity act) {
