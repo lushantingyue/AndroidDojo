@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    app:cardBackgroundColor="@color/cardview_theme_background"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="8dp"
+    app:contentPadding="8dp"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:gravity="left"
+        android:text="测试 ---  测试"
+        android:textColor="@android:color/white" />
+</android.support.v7.widget.CardView>

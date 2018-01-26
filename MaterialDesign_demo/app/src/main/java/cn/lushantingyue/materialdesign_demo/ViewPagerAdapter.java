@@ -19,7 +19,7 @@ import java.util.List;
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     final int PAGE_COUNT = 5;
-    private String tabTitles[] = new String[]{"读书", "电影", "音乐", "小组", "同城"};
+    private String tabTitles[] = new String[]{"简书七日热门", "电影", "音乐", "小组", "同城"};
     private List<Fragment> fragments = new ArrayList<>();
     private Context context;
 
