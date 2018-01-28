@@ -51,4 +51,6 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
     compile 'com.squareup.okhttp3:okhttp:3.7.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.7.0'
+    // 仿微信图片选择器
+    compile 'com.lzy.widget:imagepicker:0.6.1'
 }

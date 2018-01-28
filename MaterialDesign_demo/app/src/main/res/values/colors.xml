@@ -41,4 +41,6 @@
     <!--btnGreen:    #42BD56-->
     <color name="itemOrange">#E19015</color>
     <color name="cardview_theme_background">#ea6f5a</color>
+
+    <color name="blue">#33b5e5</color>
 </resources>

@@ -1,5 +1,6 @@
 package cn.lushantingyue.materialdesign_demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -16,23 +17,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.orhanobut.logger.AndroidLogAdapter;
-import com.orhanobut.logger.FormatStrategy;
-import com.orhanobut.logger.Logger;
-import com.orhanobut.logger.PrettyFormatStrategy;
+import com.lzy.imagepicker.ImagePicker;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
-import cn.lushantingyue.materialdesign_demo.bean.MovieInfo;
+import cn.lushantingyue.materialdesign_demo.modules.image.GlideImageLoader;
+import cn.lushantingyue.materialdesign_demo.modules.image.WxChooserActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Movie> movies = new ArrayList<>();
     private DrawerLayout mDrawerLayout;
     private CoordinatorLayout root_layout;
+    private ImagePicker imagePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        mNavigationView.getHeaderView(0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, WxChooserActivity.class));
+            }
+        });
+
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -144,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        imagePicker = ImagePicker.getInstance();
+        imagePicker.setImageLoader(new GlideImageLoader());
 //        CollapsingToolbarLayout
 //        mCollapsingToolbarLayout.setContentScrim();
 //        AppBarLayout
