@@ -26,8 +26,8 @@ import com.lzy.imagepicker.ImagePicker;
 import java.util.ArrayList;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
-import cn.lushantingyue.materialdesign_demo.modules.image.GlideImageLoader;
-import cn.lushantingyue.materialdesign_demo.modules.image.WxChooserActivity;
+import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
+import cn.lushantingyue.materialdesign_demo.modules.photopicker.WxChooserActivity;
 
 public class MainActivity extends AppCompatActivity {
 

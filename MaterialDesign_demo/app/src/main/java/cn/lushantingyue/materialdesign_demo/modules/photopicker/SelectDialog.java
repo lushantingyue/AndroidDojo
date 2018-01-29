@@ -1,4 +1,4 @@
-package cn.lushantingyue.materialdesign_demo.modules.image;
+package cn.lushantingyue.materialdesign_demo.modules.photopicker;
 
 import android.app.Activity;
 import android.app.Dialog;
