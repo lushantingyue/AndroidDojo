@@ -156,4 +156,10 @@ public class WxChooserActivity extends AppCompatActivity
             }
         }
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_enter_left, R.anim.slide_exit_right);
+    }
 }

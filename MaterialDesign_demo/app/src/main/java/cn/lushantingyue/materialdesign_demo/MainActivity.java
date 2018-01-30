@@ -93,7 +93,8 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.getHeaderView(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, WxChooserActivity.class));
+                Intent intent = new Intent(MainActivity.this, WxChooserActivity.class);
+                startActivity(intent);
             }
         });
 
