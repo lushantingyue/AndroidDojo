@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.WxChooserActivity;
+import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,8 +94,9 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.getHeaderView(0).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, WxChooserActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(MainActivity.this, WxChooserActivity.class);
+//                startActivity(intent);
+                ImageUtils.showImagePickDialog(act);
             }
         });
 

@@ -13,5 +13,5 @@ public class Constant {
     static String wifi = "http://192.168.155.1:3000/"; // 连本机wifi使用
     static String wifi2 = "http://192.168.1.105:3000/";
 
-    public static String baseUrl = wifi;
+    public static String baseUrl = wifi2;
 }
