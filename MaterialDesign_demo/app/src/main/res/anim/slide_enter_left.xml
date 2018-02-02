@@ -7,8 +7,7 @@
         android:fillBefore="true"
         android:fillEnabled="true"
         android:fromXDelta="-100.0%p"
+        android:interpolator="@android:anim/linear_interpolator"
         android:toXDelta="0.0%p" />
-    <!--android:interpolator="@anim/LinearInterpolator"-->
-    <!--android:interpolator="@interpolator/linear"-->
 
 </set>
