@@ -3,6 +3,7 @@ package cn.lushantingyue.materialdesign_demo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import cn.lushantingyue.materialdesign_demo.bean.Music;
 import cn.lushantingyue.materialdesign_demo.multitype.ArticalViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.MovieViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.MusicViewBinder;
+import cn.lushantingyue.materialdesign_demo.multitype.SimpleViewBinder;
 import io.reactivex.disposables.Disposable;
 import me.drakeet.multitype.MultiTypeAdapter;
 
@@ -42,6 +44,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     ArrayList<Movie> movies = new ArrayList<>();
     ArrayList<Music.MusicsBean> music = new ArrayList<>();
     private int curPage = 1;
+    private FragmentActivity act;
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -55,12 +58,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
-        Activity act = getActivity();
-        if(mPage == 2) {
-            LocalData.loadData(movies, act);
-        } else if (mPage == 3) {
-            LocalData.loadMusic(music, act);
-        }
+        act = getActivity();
     }
 
     @Override
@@ -68,17 +66,21 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
             savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_page, null);
         lv = (RecyclerView) view.findViewById(R.id.lv);
-        // 创建一个线性布局管理器
-
+        // 创建并配置一个线性布局管理器
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
-
-        // 设置布局管理器
-
         lv.setLayoutManager(layoutManager);
         adapter = new MultiTypeAdapter();
 
-            /* 模拟加载数据，也可以稍后再加载，然后使用
-         * adapter.notifyDataSetChanged() 刷新列表 */
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        /*
+         * 模拟加载数据，也可以稍后再加载，
+         * 然后使用 adapter.notifyDataSetChanged() 刷新列表
+         * */
         switch (mPage) {
             case 1:
                 adapter.register(Articles.class, new ArticalViewBinder());
@@ -87,7 +89,6 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
                 adapter.setItems(articlesList);
                 adapter.notifyDataSetChanged();
                 new RemoteData().listDataByPage(this, curPage);
-
                 break;
             case 2:
                 adapter.register(Movie.class, new MovieViewBinder());
@@ -95,6 +96,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
 
                 adapter.setItems(movies);
                 adapter.notifyDataSetChanged();
+                LocalData.loadData(movies, act);
                 break;
             case 3:
                 adapter.register(Music.MusicsBean.class, new MusicViewBinder());
@@ -102,23 +104,22 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
 
                 adapter.setItems(music);
                 adapter.notifyDataSetChanged();
+                LocalData.loadMusic(music, act);
                 break;
             default:
                 List<String> list = new ArrayList<String>();
                 for (int i = 0; i < 100; i++) {
                     list.add(i + "");
                 }
-                lv.setAdapter(new MyAdapter(list));
+//                lv.setAdapter(new MyAdapter(list));
+
+                adapter.register(String.class, new SimpleViewBinder());
+                lv.setAdapter(adapter);
+
+                adapter.setItems(list);
+                adapter.notifyDataSetChanged();
                 break;
         }
-//        if (mPage == 2) {
-//
-//        } else if(mPage ==3) {
-//
-//        } else {
-//
-//        }
-        return view;
     }
 
     @Override
