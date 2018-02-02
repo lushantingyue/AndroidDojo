@@ -8,4 +8,7 @@
     <string name="music">音乐</string>
     <string name="city">同城</string>
     <string name="group">小组</string>
+
+    <string name="no_camera">照相功能未找到！</string>
+    <string name="no_sdcard">SD卡不可用！</string>
 </resources>
