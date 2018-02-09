@@ -6,13 +6,21 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionGroupInfo;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.widget.Toast;
 
-import java.io.File;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 
+import java.io.File;
+import java.util.List;
+
+import cn.lushantingyue.materialdesign_demo.MainActivity;
 import cn.lushantingyue.materialdesign_demo.R;
 
 /**
@@ -44,9 +52,11 @@ public class ImageUtils {
                         dialog.dismiss();
                         switch (which) {
                             case 0:
+                                addPermission(activity, com.yanzhenjie.permission.Permission.CAMERA);
                                 pickImageFromCamera(activity);
                                 break;
                             case 1:
+                                addPermission(activity, com.yanzhenjie.permission.Permission.Group.STORAGE);
                                 pickImageFromAlbum(activity);
                                 break;
                             default:
@@ -55,6 +65,34 @@ public class ImageUtils {
                     }
                 })
                 .show();
+    }
+
+    /**
+     * 权限检查
+     */
+    public static void addPermission(final Activity activity, String... permissions) {
+        AndPermission.with(activity)
+                .permission(permissions)
+                .rationale(((MainActivity)activity).getRationale())
+                .onGranted(new Action() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        List<String> permissionNames = Permission.transformText(activity, permissions);
+                        String permissionText = TextUtils.join(",\n", permissionNames);
+                        Toast.makeText(activity, "权限请求 成功: " + permissionText, Toast.LENGTH_LONG).show();
+                    }
+                })
+                .onDenied(new Action() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        List<String> permissionNames = Permission.transformText(activity, permissions);
+                        String permissionText = TextUtils.join(",\n", permissionNames);
+                        Toast.makeText(activity, "权限请求 失败: " + permissionText, Toast.LENGTH_LONG).show();
+                        if (AndPermission.hasAlwaysDeniedPermission(activity, permissions)) {
+                            ((MainActivity)activity).showSetting(permissions);
+                        }
+                    }
+                }).start();
     }
 
     /**

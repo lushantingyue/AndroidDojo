@@ -22,13 +22,18 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
+import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.Rationale;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.WxChooserActivity;
+import cn.lushantingyue.materialdesign_demo.utils.DefaultRationale;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
+import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private CoordinatorLayout root_layout;
     private ImagePicker imagePicker;
+
+    private DefaultRationale mRationale;
+    private PermissionSetting mSetting;
+    private Rationale mRationaleationale;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
 //        CollapsingToolbarLayout
 //        mCollapsingToolbarLayout.setContentScrim();
 //        AppBarLayout
+
+        mRationale = new DefaultRationale();
+        mSetting = new PermissionSetting(act);
     }
 
     @Override
@@ -201,5 +213,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    public void showSetting(List<String> permissions) {
+        act.mSetting.showSetting(permissions);
+    }
+
+    public Rationale getRationale() {
+        return mRationale;
     }
 }
