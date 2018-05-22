@@ -20,7 +20,7 @@ import cn.lushantingyue.materialdesign_demo.R;
  * ProjectName:
  */
 
-public class DefaultRationale implements Rationale {
+public class DefaultRationale implements Rationale<List<String>> {
 
     @Override
     public void showRationale(Context context, List<String> permissions, final RequestExecutor executor) {

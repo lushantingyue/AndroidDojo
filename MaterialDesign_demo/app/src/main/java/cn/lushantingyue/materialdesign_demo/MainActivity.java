@@ -1,6 +1,9 @@
 package cn.lushantingyue.materialdesign_demo;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -25,17 +28,29 @@ import com.lzy.imagepicker.ImagePicker;
 import com.yanzhenjie.permission.Permission;
 import com.yanzhenjie.permission.Rationale;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.lushantingyue.materialdesign_demo.api.RemoteData;
+import cn.lushantingyue.materialdesign_demo.base.BaseModel;
+import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
+import cn.lushantingyue.materialdesign_demo.bean.Status;
+import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.WxChooserActivity;
 import cn.lushantingyue.materialdesign_demo.utils.DefaultRationale;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
 import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
+import io.reactivex.disposables.Disposable;
+import me.iwf.photopicker.PhotoPicker;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainModel.OnUploadPhotoListener, BaseModel.LoginListener {
 
     private Toolbar mToolbar;
     private MainActivity act;
@@ -222,4 +237,80 @@ public class MainActivity extends AppCompatActivity {
     public Rationale getRationale() {
         return mRationale;
     }
+
+    /**
+     *  MVP架构内应分配到那一层管理?
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (resultCode) {
+            case ImageUtils.REQUEST_CODE_FROM_ALBUM:
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(act, "触发上传", Toast.LENGTH_LONG).show();
+                    ImageUtils.cropImage(this, data.getData());
+                }
+                break;
+            case ImageUtils.REQUEST_CODE_FROM_CUT:
+                // 从剪切图片返回的数据
+                if (null != ImageUtils.mPhotoFile) {
+                    if (resultCode == RESULT_OK) {
+                        ImageUtils.scanMediaJpegFile(this, ImageUtils.mPhotoFile, new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(final String path, Uri uri) {
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (path == null) {
+                                            Toast.makeText(act, "图片未找到", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            File file = new File(path);
+                                            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                                            new RemoteData().uploadPhoto(act, requestBody);
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else {
+                        ImageUtils.mPhotoFile.delete();
+                    }
+                    // 确定 or 取消上传, 都要清空 File
+                    ImageUtils.mPhotoFile = null;
+                } else {
+                    Toast.makeText(act, "图片未找到", Toast.LENGTH_LONG).show();
+                }
+                break;
+            case ImageUtils.REQUEST_CODE_FROM_CAMERA:
+                //
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void checkPassport() {
+        new RemoteData().checkPassport(this);
+    }
+
+    @Override
+    public void onSuccess(Status msg) {
+        Toast.makeText(act, msg.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onFailure(String msg, Exception e) {
+        Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void saveDisposable(Disposable d) {
+
+    }
+
 }

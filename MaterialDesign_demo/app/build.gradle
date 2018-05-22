@@ -58,5 +58,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.1.0'
 
     // 6.0权限
-    implementation 'com.yanzhenjie:permission:2.0.0-rc1'
+    implementation ('com.yanzhenjie:permission:2.0.0-rc5', {
+        exclude group:'com.android.support'
+    })
 }

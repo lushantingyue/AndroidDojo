@@ -12,6 +12,7 @@ import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
@@ -46,9 +47,13 @@ public interface ApiService {
     Observable<LoginBean> logout();
 
     @POST("xauth/login")
-    Observable<LoginBean> login(@Header("username") String usrname, @Header("password") String psw);
+    Observable<LoginBean> login01(@Header("username") String usrname, @Header("password") String psw);
+
+    @POST("xauth/login")
+    Observable<LoginBean> login(@Body HashMap<String, String> params);
 
     // 图片上传
+    @Multipart
     @POST("upload/pic")
-    Observable<Status> upload(@Part() RequestBody file);
+    Observable<Status> upload (@Part("file\"; filename=\"test.jpg\"") RequestBody imgs);
 }

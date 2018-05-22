@@ -1,14 +1,21 @@
 package cn.lushantingyue.materialdesign_demo.utils;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionGroupInfo;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -22,6 +29,7 @@ import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.MainActivity;
 import cn.lushantingyue.materialdesign_demo.R;
+import cn.lushantingyue.materialdesign_demo.api.RemoteData;
 
 /**
  * Created by diyik on 2018/2/2.
@@ -52,12 +60,12 @@ public class ImageUtils {
                         dialog.dismiss();
                         switch (which) {
                             case 0:
-                                addPermission(activity, com.yanzhenjie.permission.Permission.CAMERA);
+                                addPermission(activity, Permission.CAMERA);
                                 pickImageFromCamera(activity);
                                 break;
                             case 1:
-                                addPermission(activity, com.yanzhenjie.permission.Permission.Group.STORAGE);
-                                pickImageFromAlbum(activity);
+                                ((MainActivity)activity).checkPassport();
+                                requestPermissionForAlbum(activity, Permission.Group.STORAGE);
                                 break;
                             default:
                                 break;
@@ -74,7 +82,7 @@ public class ImageUtils {
         AndPermission.with(activity)
                 .permission(permissions)
                 .rationale(((MainActivity)activity).getRationale())
-                .onGranted(new Action() {
+                .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> permissions) {
                         List<String> permissionNames = Permission.transformText(activity, permissions);
@@ -82,7 +90,36 @@ public class ImageUtils {
                         Toast.makeText(activity, "权限请求 成功: " + permissionText, Toast.LENGTH_LONG).show();
                     }
                 })
-                .onDenied(new Action() {
+                .onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        List<String> permissionNames = Permission.transformText(activity, permissions);
+                        String permissionText = TextUtils.join(",\n", permissionNames);
+                        Toast.makeText(activity, "权限请求 失败: " + permissionText, Toast.LENGTH_LONG).show();
+                        if (AndPermission.hasAlwaysDeniedPermission(activity, permissions)) {
+                            ((MainActivity)activity).showSetting(permissions);
+                        }
+                    }
+                }).start();
+    }
+
+    /**
+     * 权限检查
+     */
+    public static void requestPermissionForAlbum(final Activity activity, String... permissions) {
+        AndPermission.with(activity)
+                .permission(permissions)
+                .rationale(((MainActivity)activity).getRationale())
+                .onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        List<String> permissionNames = Permission.transformText(activity, permissions);
+                        String permissionText = TextUtils.join(",\n", permissionNames);
+                        Toast.makeText(activity, "权限请求 成功: " + permissionText, Toast.LENGTH_LONG).show();
+                        pickImageFromAlbum(activity);
+                    }
+                })
+                .onDenied(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> permissions) {
                         List<String> permissionNames = Permission.transformText(activity, permissions);
@@ -129,6 +166,142 @@ public class ImageUtils {
         activity.startActivityForResult(intent, REQUEST_CODE_FROM_ALBUM);
     }
 
+    /**
+     * 裁剪本地图片
+     * @param activity
+     * @param uri
+     */
+    public static void cropImage(final Activity activity, Uri uri){
+        if (!isSdcardWritable()) {
+            Toast.makeText(activity, R.string.no_sdcard, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (mPhotoFile == null) {
+            mPhotoFile = getCameraPhotoFile();
+        }
+        String absolutePath19 = getImageAbsolutePath19(activity, uri);
+        // 裁剪图片意图
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(Uri.fromFile(new File(absolutePath19)), "image/*");
+        intent.putExtra("crop", "true");
+        // 裁剪框的比例，1：1
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        // 裁剪后输出图片的尺寸大小
+        intent.putExtra("outputX", 250);
+        intent.putExtra("outputY", 250);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+        intent.putExtra("return-data", false);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true); // no face detection
+
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CUT
+        activity.startActivityForResult(intent, REQUEST_CODE_FROM_CUT);
+    }
+
+    /**
+     * 根据Uri获取图片绝对路径，解决Android4.4以上版本Uri转换
+     * @param context
+     * @param imageUri
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    private static String getImageAbsolutePath19(Context context, Uri imageUri) {
+        if (context == null || imageUri == null)
+            return null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+                && DocumentsContract.isDocumentUri(context, imageUri)) {
+            if (isExternalStorageDocument(imageUri)) {
+                String docId = DocumentsContract.getDocumentId(imageUri);
+                String[] split = docId.split(":");
+                String type = split[0];
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+            } else if (isDownloadsDocument(imageUri)) {
+                String id = DocumentsContract.getDocumentId(imageUri);
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                return getDataColumn(context, contentUri, null, null);
+            } else if (isMediaDocument(imageUri)) {
+                String docId = DocumentsContract.getDocumentId(imageUri);
+                String[] split = docId.split(":");
+                String type = split[0];
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+                String selection = MediaStore.Images.Media._ID + "=?";
+                String[] selectionArgs = new String[] { split[1] };
+                return getDataColumn(context, contentUri, selection, selectionArgs);
+            }
+        }
+
+        // MediaStore (and general)
+        if ("content".equalsIgnoreCase(imageUri.getScheme())) {
+            // Return the remote address
+            if (isGooglePhotosUri(imageUri))
+                return imageUri.getLastPathSegment();
+            return getDataColumn(context, imageUri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
+            return imageUri.getPath();
+        }
+        return null;
+    }
+
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+        Cursor cursor = null;
+        String column = MediaStore.Images.Media.DATA;
+        String[] projection = { column };
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is ExternalStorageProvider.
+     */
+    private static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is DownloadsProvider.
+     */
+    private static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is MediaProvider.
+     */
+    private static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is Google Photos.
+     */
+    private static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
     public static boolean hasCamera(Context context) {
         PackageManager pm = context.getPackageManager();
         return pm.hasSystemFeature(PackageManager.FEATURE_CAMERA)
@@ -152,6 +325,13 @@ public class ImageUtils {
             path.mkdirs();
         }
         return new File(path, "pic_" + System.currentTimeMillis() + ".jpg");
+    }
+
+    public static void scanMediaJpegFile(final Context context,
+                                         final File file, final MediaScannerConnection.OnScanCompletedListener listener) {
+        MediaScannerConnection.scanFile(context,
+                new String[] { file.getAbsolutePath() },
+                new String[] { "image/jpg" }, listener);
     }
 
 }

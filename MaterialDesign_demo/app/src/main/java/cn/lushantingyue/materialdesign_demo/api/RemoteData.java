@@ -1,17 +1,26 @@
 package cn.lushantingyue.materialdesign_demo.api;
 
+import android.net.Uri;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import cn.lushantingyue.materialdesign_demo.MainActivity;
 import cn.lushantingyue.materialdesign_demo.PageFragment;
 import cn.lushantingyue.materialdesign_demo.base.BaseModel;
 import cn.lushantingyue.materialdesign_demo.bean.ArticleDetail;
 import cn.lushantingyue.materialdesign_demo.bean.Articles;
+import cn.lushantingyue.materialdesign_demo.bean.LoginBean;
+import cn.lushantingyue.materialdesign_demo.bean.Status;
+import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.RequestBody;
+import retrofit2.http.Url;
 
 /**
  * Created by Lushantingyue on 2017/12/28 17.
@@ -58,6 +67,97 @@ public class RemoteData {
                 });
     }
 
+    /**
+     * 检查登陆状态
+     * @param listener
+     */
+    public void checkPassport(final BaseModel.LoginListener listener) {
+
+        Observable<Status> observable = service.checkPassport();
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Status>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        listener.saveDisposable(d);
+                    }
+
+                    @Override
+                    public void onNext(Status status) {
+                        listener.onSuccess(status);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        listener.onFailure("未登陆", new Exception("retrofit request erro."));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
+    public void login(String usrname, String psw) {
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("username", usrname);
+        params.put("password", psw);
+        Observable<LoginBean> observable = service.login(params);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<LoginBean>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(LoginBean loginBean) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    /**
+     *
+     */
+    public void logout() {
+        Observable<LoginBean> observable = service.logout();
+        observable.subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<LoginBean>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(LoginBean loginBean) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
 //    public void articleDetail(final DetailModelImpl.OnLoadArticlesDetailListener listener, String href) {
 //
 //        Observable<ArticleDetail> observable = service.articleDetail(href);
@@ -86,5 +186,30 @@ public class RemoteData {
 //                });
 //
 //    }
+
+    public void uploadPhoto(final MainModel.OnUploadPhotoListener listener, final RequestBody file) {
+        Observable<Status> observable = service.upload(file);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Status>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        listener.saveDisposable(d);
+                    }
+
+                    @Override
+                    public void onNext(Status msg) {
+                        listener.onSuccess(msg); //上传成功，返回消息
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        listener.onFailure("上传错误", new Exception("retrofit request erro."));
+                    }
+
+                    @Override
+                    public void onComplete() { }
+                });
+    }
 
 }
