@@ -269,8 +269,8 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
             case ImageUtils.REQUEST_CODE_FROM_CUT:
                 // 从剪切图片返回的数据
                 if (null != ImageUtils.mPhotoFile) {
-                    if (resultCode == RESULT_OK) {
-                        ImageUtils.scanMediaJpegFile(this, ImageUtils.mPhotoFile, new MediaScannerConnection.OnScanCompletedListener() {
+//                    if (resultCode == RESULT_OK) {
+                        ImageUtils.scanMediaJpegFile(act, ImageUtils.mPhotoFile, new MediaScannerConnection.OnScanCompletedListener() {
                             @Override
                             public void onScanCompleted(final String path, Uri uri) {
 
@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                                     @Override
                                     public void run() {
                                         if (path == null) {
-                                            Toast.makeText(act, "图片未找到", Toast.LENGTH_LONG).show();
+                                            ToastUtil.show(act,"图片未找到");
                                         } else {
                                             File file = new File(path);
                                             RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
@@ -288,9 +288,9 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                                 });
                             }
                         });
-                    } else {
-                        ImageUtils.mPhotoFile.delete();
-                    }
+//                    } else {
+//                        ImageUtils.mPhotoFile.delete();
+//                    }
                     // 确定 or 取消上传, 都要清空 File
                     ImageUtils.mPhotoFile = null;
                 } else {
