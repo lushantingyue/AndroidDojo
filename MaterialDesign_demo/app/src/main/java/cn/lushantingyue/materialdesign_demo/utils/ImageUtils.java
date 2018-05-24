@@ -17,6 +17,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -64,7 +66,6 @@ public class ImageUtils {
                                 pickImageFromCamera(activity);
                                 break;
                             case 1:
-                                ((MainActivity)activity).checkPassport();
                                 requestPermissionForAlbum(activity, Permission.Group.STORAGE);
                                 break;
                             default:
@@ -150,7 +151,18 @@ public class ImageUtils {
             mPhotoFile = getCameraPhotoFile();
             Intent intent = new Intent();
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+
+            // 兼容 Android7.0文件分享策略
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            android:authorities="cn.lushantingyue.materialdesign_demo.file_provider"
+                Uri photoOutputUri = FileProvider.getUriForFile(
+                        activity,
+                        activity.getPackageName() + ".file_provider",
+                        mPhotoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoOutputUri);
+            } else {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+            }
             activity.startActivityForResult(intent, REQUEST_CODE_FROM_CAMERA);
         }
     }
@@ -171,7 +183,7 @@ public class ImageUtils {
      * @param activity
      * @param uri
      */
-    public static void cropImage(final Activity activity, Uri uri){
+    public static void cropImage(final Activity activity, Uri uri) {
         if (!isSdcardWritable()) {
             Toast.makeText(activity, R.string.no_sdcard, Toast.LENGTH_SHORT).show();
             return;
@@ -190,7 +202,19 @@ public class ImageUtils {
         // 裁剪后输出图片的尺寸大小
         intent.putExtra("outputX", 250);
         intent.putExtra("outputY", 250);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+
+        // 兼容 Android7.0文件分享策略
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            android:authorities="cn.lushantingyue.materialdesign_demo.file_provider"
+            Uri photoOutputUri = FileProvider.getUriForFile(
+                    activity,
+                    activity.getPackageName() + ".file_provider",
+                    mPhotoFile);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoOutputUri);
+        } else {
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+        }
+
         intent.putExtra("return-data", false);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         intent.putExtra("noFaceDetection", true); // no face detection
@@ -200,15 +224,53 @@ public class ImageUtils {
     }
 
     /**
-     * 根据Uri获取图片绝对路径，解决Android4.4以上版本Uri转换
+     * 根据Uri获取图片绝对路径，解决Android4.4以上版本Uri转换, 解决 Android7.0 FileURI expose exception的问题
      * @param context
      * @param imageUri
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
+//    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @TargetApi(Build.VERSION_CODES.N)
     private static String getImageAbsolutePath19(Context context, Uri imageUri) {
-        if (context == null || imageUri == null)
+        if (context == null || imageUri == null) {
             return null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+        }
+//        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.N) {
+//            /**
+//             * ****************************************************************
+//             */
+//            if (isExternalStorageDocument(imageUri)) {
+//                String docId = DocumentsContract.getDocumentId(imageUri);
+//                String[] split = docId.split(":");
+//                String type = split[0];
+//                if ("primary".equalsIgnoreCase(type)) {
+//                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+//                }
+//            } else if (isDownloadsDocument(imageUri)) {
+//                String id = DocumentsContract.getDocumentId(imageUri);
+//                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+//                return getDataColumn(context, contentUri, null, null);
+//            } else if (isMediaDocument(imageUri)) {
+//                String docId = DocumentsContract.getDocumentId(imageUri);
+//                String[] split = docId.split(":");
+//                String type = split[0];
+//                Uri contentUri = null;
+//                if ("image".equals(type)) {
+//                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+//                } else if ("video".equals(type)) {
+//                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+//                } else if ("audio".equals(type)) {
+//                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+//                }
+//                String selection = MediaStore.Images.Media._ID + "=?";
+//                String[] selectionArgs = new String[]{split[1]};
+//                return getDataColumn(context, contentUri, selection, selectionArgs);
+//            }
+//            /**
+//             * *********************************************************************
+//             */
+//        }
+//        else
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                 && DocumentsContract.isDocumentUri(context, imageUri)) {
             if (isExternalStorageDocument(imageUri)) {
                 String docId = DocumentsContract.getDocumentId(imageUri);

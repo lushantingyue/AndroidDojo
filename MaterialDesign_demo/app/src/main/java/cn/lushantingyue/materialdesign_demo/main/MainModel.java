@@ -1,5 +1,6 @@
 package cn.lushantingyue.materialdesign_demo.main;
 
+import cn.lushantingyue.materialdesign_demo.base.BaseModel;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
 import io.reactivex.disposables.Disposable;
 

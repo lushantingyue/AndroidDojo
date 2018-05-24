@@ -71,7 +71,7 @@ public class RemoteData {
      * 检查登陆状态
      * @param listener
      */
-    public void checkPassport(final BaseModel.LoginListener listener) {
+    public void checkPassport(final BaseModel.checkPassportListener listener) {
 
         Observable<Status> observable = service.checkPassport();
         observable.subscribeOn(Schedulers.io())
@@ -89,7 +89,7 @@ public class RemoteData {
 
                     @Override
                     public void onError(Throwable e) {
-                        listener.onFailure("未登陆", new Exception("retrofit request erro."));
+                        listener.onLoginFailure("未登陆", new Exception("retrofit request erro."));
                     }
 
                     @Override
@@ -98,7 +98,7 @@ public class RemoteData {
                 });
     }
 
-    public void login(String usrname, String psw) {
+    public void login(String usrname, String psw, final BaseModel.LoginListener listener) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("username", usrname);
         params.put("password", psw);
@@ -108,17 +108,17 @@ public class RemoteData {
                 .subscribe(new Observer<LoginBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        listener.saveDisposable(d);
                     }
 
                     @Override
                     public void onNext(LoginBean loginBean) {
-
+                        listener.onLoginSuccess(loginBean);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        listener.onLoginFailure("登陆失败", new Exception("login erro."));
                     }
 
                     @Override

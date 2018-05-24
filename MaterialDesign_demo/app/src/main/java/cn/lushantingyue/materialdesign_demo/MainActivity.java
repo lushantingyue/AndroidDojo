@@ -1,10 +1,10 @@
 package cn.lushantingyue.materialdesign_demo;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -25,32 +25,31 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
-import com.yanzhenjie.permission.Permission;
+import com.yanzhenjie.permission.FileProvider;
 import com.yanzhenjie.permission.Rationale;
 
 import java.io.File;
-import java.net.URI;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.api.RemoteData;
 import cn.lushantingyue.materialdesign_demo.base.BaseModel;
-import cn.lushantingyue.materialdesign_demo.bean.Articles;
+import cn.lushantingyue.materialdesign_demo.bean.LoginBean;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
 import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
-import cn.lushantingyue.materialdesign_demo.modules.photopicker.WxChooserActivity;
 import cn.lushantingyue.materialdesign_demo.utils.DefaultRationale;
+import cn.lushantingyue.materialdesign_demo.utils.FileUtils;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
 import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
+import cn.lushantingyue.materialdesign_demo.utils.ToastUtil;
 import io.reactivex.disposables.Disposable;
-import me.iwf.photopicker.PhotoPicker;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
-public class MainActivity extends AppCompatActivity implements MainModel.OnUploadPhotoListener, BaseModel.LoginListener {
+public class MainActivity extends AppCompatActivity implements MainModel.OnUploadPhotoListener, BaseModel.LoginListener, BaseModel.checkPassportListener {
 
     private Toolbar mToolbar;
     private MainActivity act;
@@ -63,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     private DefaultRationale mRationale;
     private PermissionSetting mSetting;
     private Rationale mRationaleationale;
+    private WeakReference<RemoteData> remoteData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
             public void onClick(View view) {
 //                Intent intent = new Intent(MainActivity.this, WxChooserActivity.class);
 //                startActivity(intent);
+                checkPassport();
                 ImageUtils.showImagePickDialog(act);
             }
         });
@@ -183,6 +184,16 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
 
         mRationale = new DefaultRationale();
         mSetting = new PermissionSetting(act);
+        remoteData = new WeakReference<RemoteData>(new RemoteData());
+    }
+
+    private RemoteData remoteData() {
+        if(remoteData.get() != null) {
+            return remoteData.get();
+        } else {
+            remoteData = new WeakReference<RemoteData>(new RemoteData());
+            return remoteData.get();
+        }
     }
 
     @Override
@@ -246,12 +257,14 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+//        super.onActivityResult(requestCode, resultCode, data);
 
-        switch (resultCode) {
+        switch (requestCode) {
             case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(act, "触发上传", Toast.LENGTH_LONG).show();
+                    // Intent.getData(); 在7.0系统不允许使用
+                    Uri uri = data.getData();
                     ImageUtils.cropImage(this, data.getData());
                 }
                 break;
@@ -271,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                                         } else {
                                             File file = new File(path);
                                             RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                                            new RemoteData().uploadPhoto(act, requestBody);
+                                            remoteData().uploadPhoto(act, requestBody);
                                         }
                                     }
                                 });
@@ -283,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                     // 确定 or 取消上传, 都要清空 File
                     ImageUtils.mPhotoFile = null;
                 } else {
-                    Toast.makeText(act, "图片未找到", Toast.LENGTH_LONG).show();
+                    ToastUtil.show(act, "图片未找到");
                 }
                 break;
             case ImageUtils.REQUEST_CODE_FROM_CAMERA:
@@ -295,22 +308,34 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     }
 
     public void checkPassport() {
-        new RemoteData().checkPassport(this);
+        remoteData().checkPassport(this);
     }
 
     @Override
     public void onSuccess(Status msg) {
-        Toast.makeText(act, msg.getMessage(), Toast.LENGTH_LONG).show();
+        // test login
+        ToastUtil.show(act, msg.getMessage());
     }
 
     @Override
     public void onFailure(String msg, Exception e) {
-        Toast.makeText(act, msg, Toast.LENGTH_LONG).show();
+        ToastUtil.show(act, msg);
     }
 
     @Override
     public void saveDisposable(Disposable d) {
 
+    }
+
+    @Override
+    public void onLoginSuccess(LoginBean msg) {
+        ToastUtil.show(act, msg.getMessage());
+    }
+
+    @Override
+    public void onLoginFailure(String msg, Exception e) {
+        ToastUtil.show(act, msg);
+        remoteData().login("Tester123", "123", act);
     }
 
 }
