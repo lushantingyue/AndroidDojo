@@ -263,8 +263,6 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
             case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(act, "触发上传", Toast.LENGTH_LONG).show();
-                    // Intent.getData(); 在7.0系统不允许使用
-                    Uri uri = data.getData();
                     ImageUtils.cropImage(this, data.getData());
                 }
                 break;

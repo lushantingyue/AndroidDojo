@@ -194,7 +194,16 @@ public class ImageUtils {
         String absolutePath19 = getImageAbsolutePath19(activity, uri);
         // 裁剪图片意图
         Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(Uri.fromFile(new File(absolutePath19)), "image/*");
+        // 兼容 Android7.0文件分享策略
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Uri photoOutputUri = FileProvider.getUriForFile(
+                    activity,
+                    activity.getPackageName() + ".file_provider",
+                    new File(absolutePath19));
+            intent.setDataAndType(photoOutputUri, "image/*");
+        } else {
+            intent.setDataAndType(Uri.fromFile(new File(absolutePath19)), "image/*");
+        }
         intent.putExtra("crop", "true");
         // 裁剪框的比例，1：1
         intent.putExtra("aspectX", 1);
