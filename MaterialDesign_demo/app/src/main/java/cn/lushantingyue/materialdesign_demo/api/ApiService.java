@@ -55,5 +55,6 @@ public interface ApiService {
     // 图片上传
     @Multipart
     @POST("upload/pic")
-    Observable<Status> upload (@Part("file\"; filename=\"test.jpg\"") RequestBody imgs);
+//    form-data; name="file"; filename=""
+    Observable<Status> upload (@Part("file\"; filename=\"test.jpg\"") RequestBody img);
 }

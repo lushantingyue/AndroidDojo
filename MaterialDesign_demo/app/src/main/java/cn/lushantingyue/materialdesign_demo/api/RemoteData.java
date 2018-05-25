@@ -1,26 +1,19 @@
 package cn.lushantingyue.materialdesign_demo.api;
 
-import android.net.Uri;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import cn.lushantingyue.materialdesign_demo.MainActivity;
-import cn.lushantingyue.materialdesign_demo.PageFragment;
 import cn.lushantingyue.materialdesign_demo.base.BaseModel;
-import cn.lushantingyue.materialdesign_demo.bean.ArticleDetail;
 import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.LoginBean;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
 import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.RequestBody;
-import retrofit2.http.Url;
 
 /**
  * Created by Lushantingyue on 2017/12/28 17.
@@ -204,11 +197,12 @@ public class RemoteData {
 
                     @Override
                     public void onError(Throwable e) {
-                        listener.onFailure("上传错误", new Exception("retrofit request erro."));
+                        listener.onFailure("上传错误" + e.getMessage(), new Exception("retrofit request erro."));
                     }
 
                     @Override
                     public void onComplete() { }
+
                 });
     }
 
