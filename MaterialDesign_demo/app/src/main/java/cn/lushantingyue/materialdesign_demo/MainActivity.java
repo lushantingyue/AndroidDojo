@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         remoteData().login(usr, psw, this);
     }
 
-    // TODO: 2018/6/1   获取access_token
+    // TODO: 2018/6/1   注册账号
     private void register(String usr, String psw) {
         remoteData().register(usr, psw, this);
     }
