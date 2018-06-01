@@ -1,5 +1,6 @@
 package cn.lushantingyue.materialdesign_demo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -18,10 +19,12 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
@@ -34,7 +37,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.api.RemoteData;
+import cn.lushantingyue.materialdesign_demo.api.RetrofitWrapper;
+import cn.lushantingyue.materialdesign_demo.api.TokenInterceptor;
 import cn.lushantingyue.materialdesign_demo.base.BaseModel;
+import cn.lushantingyue.materialdesign_demo.base.TokenHolder;
 import cn.lushantingyue.materialdesign_demo.bean.LoginBean;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
@@ -45,11 +51,14 @@ import cn.lushantingyue.materialdesign_demo.utils.FileUtils;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
 import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
 import cn.lushantingyue.materialdesign_demo.utils.ToastUtil;
+import cn.lushantingyue.materialdesign_demo.widget.LoginDialog;
+import cn.lushantingyue.materialdesign_demo.widget.LoginInterface;
 import io.reactivex.disposables.Disposable;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
-public class MainActivity extends AppCompatActivity implements MainModel.OnUploadPhotoListener, BaseModel.LoginListener, BaseModel.checkPassportListener {
+public class MainActivity extends AppCompatActivity implements MainModel.OnUploadPhotoListener, BaseModel.LoginListener
+        , LoginInterface, TokenHolder {
 
     private Toolbar mToolbar;
     private MainActivity act;
@@ -63,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     private PermissionSetting mSetting;
     private Rationale mRationaleationale;
     private WeakReference<RemoteData> remoteData;
+    private String token = null;
+    private PopupWindow loginPopup;
+    private LoginDialog newFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
             public void onClick(View view) {
 //                Intent intent = new Intent(MainActivity.this, WxChooserActivity.class);
 //                startActivity(intent);
-                checkPassport();
                 ImageUtils.showImagePickDialog(act);
             }
         });
@@ -190,6 +201,10 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     private RemoteData remoteData() {
         if(remoteData.get() != null) {
             return remoteData.get();
+        } else if (token != null) {
+            TokenInterceptor tokenInterceptor = new TokenInterceptor(token);
+            remoteData = new WeakReference<RemoteData>(new RemoteData(tokenInterceptor));
+            return remoteData.get();
         } else {
             remoteData = new WeakReference<RemoteData>(new RemoteData());
             return remoteData.get();
@@ -199,6 +214,34 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     @Override
     protected void onResume() {
         super.onResume();
+        // TODO: 2018/6/1  登陆弹窗
+        if (token == null) {
+            showLogin();
+        }
+    }
+
+    private void showLogin() {
+        newFragment = LoginDialog.newInstance();
+        newFragment.show(act.getSupportFragmentManager(), "login_dialog");
+    }
+
+    private void dismissLogin() {
+        newFragment.dismiss();
+    }
+
+    // TODO: 2018/6/1   刷新fragment数据 
+    private void refreshPageTab() {
+
+    }
+
+    // TODO: 2018/6/1   获取access_token
+    private void getAccessToken(String usr, String psw) {
+        remoteData().login(usr, psw, this);
+    }
+
+    // TODO: 2018/6/1   获取access_token
+    private void register(String usr, String psw) {
+        remoteData().register(usr, psw, this);
     }
 
     @Override
@@ -305,10 +348,6 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         }
     }
 
-    public void checkPassport() {
-        remoteData().checkPassport(this);
-    }
-
     @Override
     public void onSuccess(Status msg) {
         // test login
@@ -327,13 +366,37 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
 
     @Override
     public void onLoginSuccess(LoginBean msg) {
-        ToastUtil.show(act, msg.getMessage());
+        this.token = msg.getToken();
+        this.remoteData = null;
+        TokenInterceptor tokenInteceptor = new TokenInterceptor(token);
+        remoteData = new WeakReference<RemoteData>(new RemoteData(tokenInteceptor));
+        ToastUtil.show(act, msg.getMessage() + token);
+        dismissLogin();
     }
 
     @Override
     public void onLoginFailure(String msg, Exception e) {
         ToastUtil.show(act, msg);
         remoteData().login("Tester123", "123", act);
+    }
+
+    @Override
+    public void btn_click(int id, String usr, String psw) {
+        switch (id) {
+            case R.id.btn_login:
+                getAccessToken(usr, psw);
+                break;
+            case R.id.btn_register:
+                register(usr, psw);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public String getToken() {
+        return token;
     }
 
 }

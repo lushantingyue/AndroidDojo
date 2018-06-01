@@ -1,6 +1,7 @@
 package cn.lushantingyue.materialdesign_demo;
 
 import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,7 +16,9 @@ import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.api.LocalData;
 import cn.lushantingyue.materialdesign_demo.api.RemoteData;
+import cn.lushantingyue.materialdesign_demo.api.TokenInterceptor;
 import cn.lushantingyue.materialdesign_demo.base.BaseModel;
+import cn.lushantingyue.materialdesign_demo.base.TokenHolder;
 import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.Music;
@@ -25,6 +28,7 @@ import cn.lushantingyue.materialdesign_demo.multitype.MusicViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.SimpleViewBinder;
 import io.reactivex.disposables.Disposable;
 import me.drakeet.multitype.MultiTypeAdapter;
+import okhttp3.Interceptor;
 
 /**
  * Created by Administrator on 2018/1/12 16.
@@ -88,7 +92,11 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
 
                 adapter.setItems(articlesList);
                 adapter.notifyDataSetChanged();
-                new RemoteData().listDataByPage(this, curPage);
+                if (act instanceof TokenHolder) {
+                    TokenHolder activity = (TokenHolder) act;
+                    new RemoteData(new TokenInterceptor(activity.getToken()))
+                            .listDataByPage(this, curPage);
+                }
                 break;
             case 2:
                 adapter.register(Movie.class, new MovieViewBinder());
@@ -124,6 +132,9 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
 
     @Override
     public void onSuccess(ArrayList<Articles> list, int page) {
+        if (page == 1) {
+            articlesList.clear();
+        }
         if (list.size() > 0) {
             articlesList.addAll(list);
         }
@@ -142,5 +153,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     public void saveDisposable(Disposable d) {
 
     }
+
+    // TODO: 2018/6/1   上拉加载更多
 
 }
