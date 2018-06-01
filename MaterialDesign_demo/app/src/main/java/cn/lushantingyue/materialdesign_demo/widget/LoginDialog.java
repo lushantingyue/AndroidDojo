@@ -17,8 +17,10 @@ import cn.lushantingyue.materialdesign_demo.R;
  * Responsibilities:
  * Description: 登陆弹窗
  * ProjectName:
+ * Why: 谷歌建议使用DialogFragment来管理对话框，当旋转屏幕和按下后退键时可以更好的管理其声明周期，它和Fragment有着基本一致的声明周期。
+ * 且DialogFragment也允许开发者把AlertDialog作为内嵌的组件进行重用，类似Fragment
+ * （DialogFragment可以在大屏幕和小屏幕显示出不同的效果，屏幕旋转相关数据不会被销毁）
  */
-
 public class LoginDialog extends DialogFragment implements View.OnClickListener {
 
     public static LoginDialog newInstance() {
