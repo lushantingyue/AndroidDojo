@@ -9,8 +9,10 @@ package cn.lushantingyue.materialdesign_demo.bean;
 
 public class LoginBean {
 
-    private String message;
     private Boolean success;
+    private String token;
+    private String message;
+    private String username;
 
     public String getMessage() {
         return message;
@@ -19,4 +21,13 @@ public class LoginBean {
     public Boolean getSuccess() {
         return success;
     }
+
+    public String getToken() {
+        return token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
 }

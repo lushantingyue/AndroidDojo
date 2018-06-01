@@ -13,6 +13,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Interceptor;
 import okhttp3.RequestBody;
 
 /**
@@ -24,10 +25,14 @@ import okhttp3.RequestBody;
 
 public class RemoteData {
 
-    private final ApiService service;
+    private ApiService service;
 
     public RemoteData() {
         service = RetrofitWrapper.getInstance();
+    }
+
+    public RemoteData(Interceptor interceptor) {
+        service = RetrofitWrapper.getInstance(interceptor);
     }
 
     public void listDataByPage(final BaseModel.OnLoadArticlesListListener listener, final int curPage) {
@@ -51,7 +56,7 @@ public class RemoteData {
 
                     @Override
                     public void onError(Throwable e) {
-                        listener.onFailure("数据加载错误", new Exception("retrofit request erro."));
+                        listener.onFailure("数据加载错误", new Exception("retrofit request error."));
                     }
 
                     @Override
@@ -64,6 +69,7 @@ public class RemoteData {
      * 检查登陆状态
      * @param listener
      */
+    @Deprecated
     public void checkPassport(final BaseModel.checkPassportListener listener) {
 
         Observable<Status> observable = service.checkPassport();
@@ -91,6 +97,12 @@ public class RemoteData {
                 });
     }
 
+    /**
+     * jason web token 登陆认证
+     * @param usrname
+     * @param psw
+     * @param listener
+     */
     public void login(String usrname, String psw, final BaseModel.LoginListener listener) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("username", usrname);
@@ -111,7 +123,7 @@ public class RemoteData {
 
                     @Override
                     public void onError(Throwable e) {
-                        listener.onLoginFailure("登陆失败", new Exception("login erro."));
+                        listener.onLoginFailure("登陆失败", new Exception("login error."));
                     }
 
                     @Override
@@ -122,26 +134,32 @@ public class RemoteData {
     }
 
     /**
-     *
+     *  注册新账号
+     * @param usr
+     * @param psw
+     * @param listener
      */
-    public void logout() {
-        Observable<LoginBean> observable = service.logout();
+    public void register(String usr, String psw, final BaseModel.LoginListener listener) {
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("username", usr);
+        params.put("password", psw);
+        Observable<LoginBean> observable = service.register(params);
         observable.subscribeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<LoginBean>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        listener.saveDisposable(d);
                     }
 
                     @Override
                     public void onNext(LoginBean loginBean) {
-
+                        listener.onLoginSuccess(loginBean);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        listener.onLoginFailure("注册失败", new Exception("register error."));
                     }
 
                     @Override

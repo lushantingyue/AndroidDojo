@@ -43,4 +43,6 @@
     <color name="cardview_theme_background">#ea6f5a</color>
 
     <color name="blue">#33b5e5</color>
+    <color name="half_black">#30000000</color>
+    <color name="translucent">#00000000</color>
 </resources>

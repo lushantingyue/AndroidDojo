@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionGroupInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
@@ -17,7 +16,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -31,10 +29,9 @@ import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.MainActivity;
 import cn.lushantingyue.materialdesign_demo.R;
-import cn.lushantingyue.materialdesign_demo.api.RemoteData;
 
 /**
- * Created by diyik on 2018/2/2.
+ * Created by lushantingyue on 2018/2/2.
  */
 public class ImageUtils {
 

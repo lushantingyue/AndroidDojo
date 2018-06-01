@@ -11,7 +11,7 @@ import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
@@ -30,29 +30,27 @@ public interface ApiService {
     @GET("data/jianshu")
     Observable<ArrayList<Articles>> listData();
 
-    //    分页请求数据
+    // TODO:  分页请求数据
     @POST("data/jianshuList")
     Observable<ArrayList<Articles>> listDataByPage(@Body HashMap<String, Integer> page);
 
+    @POST("data/jianshuListTest")
+    Observable<ArrayList<Articles>> listDataByPageTest(@HeaderMap HashMap<String, String> headers);
+
     //    http://localhost:3000/data/jianshuDetail/:articalId
-    //  根据文章关联href 请求文章详情
+    // TODO:  根据文章关联href 请求文章详情
     @GET("data/jianshuDetail/{articalId}")
     Observable<ArticleDetail> articleDetail(@Path("articalId") String articalId);
 
-    // 验证登陆状态
-    @POST("/xauth/test")
-    Observable<Status> checkPassport();
-
-    @POST("/xauth/logout")
-    Observable<LoginBean> logout();
-
-    @POST("xauth/login")
-    Observable<LoginBean> login01(@Header("username") String usrname, @Header("password") String psw);
-
-    @POST("xauth/login")
+    // TODO: 2018/6/1  登陆并获取access_token
+    @POST("users/login")
     Observable<LoginBean> login(@Body HashMap<String, String> params);
 
-    // 图片上传
+    // TODO: 2018/6/1  注册新账号
+    @POST("users/register")
+    Observable<LoginBean> register(@Body HashMap<String, String> params);
+
+    // TODO:  图片上传
     @Multipart
     @POST("upload/pic")
 //    form-data; name="file"; filename=""
