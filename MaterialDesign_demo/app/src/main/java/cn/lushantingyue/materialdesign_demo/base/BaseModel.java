@@ -23,6 +23,7 @@ public class BaseModel {
         void saveDisposable(Disposable d);  // 保存Disposable 对象
     }
 
+    @Deprecated
     public interface checkPassportListener {
         void onSuccess(Status status);
         void onLoginFailure(String msg, Exception e);

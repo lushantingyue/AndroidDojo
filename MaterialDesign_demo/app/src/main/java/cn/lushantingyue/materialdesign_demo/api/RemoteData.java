@@ -66,38 +66,6 @@ public class RemoteData {
     }
 
     /**
-     * 检查登陆状态
-     * @param listener
-     */
-    @Deprecated
-    public void checkPassport(final BaseModel.checkPassportListener listener) {
-
-        Observable<Status> observable = service.checkPassport();
-        observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Status>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        listener.saveDisposable(d);
-                    }
-
-                    @Override
-                    public void onNext(Status status) {
-                        listener.onSuccess(status);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        listener.onLoginFailure("未登陆", new Exception("retrofit request erro."));
-                    }
-
-                    @Override
-                    public void onComplete() {
-                    }
-                });
-    }
-
-    /**
      * jason web token 登陆认证
      * @param usrname
      * @param psw
