@@ -1,11 +1,9 @@
 package cn.lushantingyue.materialdesign_demo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -19,7 +17,6 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +25,6 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
-import com.yanzhenjie.permission.FileProvider;
 import com.yanzhenjie.permission.Rationale;
 
 import java.io.File;
@@ -37,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.lushantingyue.materialdesign_demo.api.RemoteData;
-import cn.lushantingyue.materialdesign_demo.api.RetrofitWrapper;
 import cn.lushantingyue.materialdesign_demo.api.TokenInterceptor;
 import cn.lushantingyue.materialdesign_demo.base.BaseModel;
 import cn.lushantingyue.materialdesign_demo.base.TokenHolder;
@@ -47,7 +42,6 @@ import cn.lushantingyue.materialdesign_demo.bean.Status;
 import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
 import cn.lushantingyue.materialdesign_demo.utils.DefaultRationale;
-import cn.lushantingyue.materialdesign_demo.utils.FileUtils;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
 import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
 import cn.lushantingyue.materialdesign_demo.utils.ToastUtil;

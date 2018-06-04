@@ -33,8 +33,9 @@ import cn.lushantingyue.materialdesign_demo.R;
 
 /**
  * @author drakeet
- * 右滑退出行为
+ * 
  */
+// TODO: 2018/6/4  右滑退出行为
 public class SwipeBackDelegate implements SwipeBackLayout.SwipeBackListener {
 
     private SwipeBackLayout swipeBackLayout;
