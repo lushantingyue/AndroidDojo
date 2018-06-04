@@ -22,6 +22,7 @@ import cn.lushantingyue.materialdesign_demo.base.TokenHolder;
 import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.Music;
+import cn.lushantingyue.materialdesign_demo.behavior.LoadMoreDelegate;
 import cn.lushantingyue.materialdesign_demo.multitype.ArticalViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.MovieViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.MusicViewBinder;
@@ -37,7 +38,7 @@ import okhttp3.Interceptor;
  * ProjectName:
  */
 
-public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesListListener {
+public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesListListener, LoadMoreDelegate.LoadMoreSubject {
 
     public static final String ARG_PAGE = "ARG_PAGE";
     private int mPage;
@@ -49,6 +50,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     ArrayList<Music.MusicsBean> music = new ArrayList<>();
     private int curPage = 1;
     private FragmentActivity act;
+    private LoadMoreDelegate loadMoreDelegate;
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -63,6 +65,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
         act = getActivity();
+        loadMoreDelegate = new LoadMoreDelegate(this);
     }
 
     @Override
@@ -74,6 +77,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         lv.setLayoutManager(layoutManager);
         adapter = new MultiTypeAdapter();
+        loadMoreDelegate.attach(lv);
 
         return view;
     }
@@ -155,6 +159,21 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     }
 
     // TODO: 2018/6/1   上拉加载更多
-    
+    @Override
+    public boolean isLoading() {
+        return false;
+    }
+
+    @Override
+    public void onLoadMore() {
+        if (mPage == 1) {
+            curPage++;
+            if (act instanceof TokenHolder) {
+                TokenHolder activity = (TokenHolder) act;
+                new RemoteData(new TokenInterceptor(activity.getToken()))
+                        .listDataByPage(this, curPage);
+            }
+        }
+    }
 
 }
