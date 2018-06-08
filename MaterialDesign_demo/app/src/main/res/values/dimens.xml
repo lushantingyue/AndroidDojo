@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_view_space_left">16</dimen>
+    <dimen name="list_view_space_right">15</dimen>
+    <dimen name="list_view_space_top">14dp</dimen>
+    <dimen name="list_view_space_bottom">16</dimen>
+</resources>

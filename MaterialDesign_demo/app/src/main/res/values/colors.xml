@@ -45,4 +45,6 @@
     <color name="blue">#33b5e5</color>
     <color name="half_black">#30000000</color>
     <color name="translucent">#00000000</color>
+
+    <color name="scrollbar">#48000000</color>
 </resources>

@@ -1,7 +1,5 @@
 package cn.lushantingyue.materialdesign_demo;
 
-import android.app.Activity;
-import android.app.Application;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -23,22 +21,23 @@ import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.Music;
 import cn.lushantingyue.materialdesign_demo.behavior.LoadMoreDelegate;
+import cn.lushantingyue.materialdesign_demo.behavior.SwipeRefreshDelegate;
 import cn.lushantingyue.materialdesign_demo.multitype.ArticalViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.MovieViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.MusicViewBinder;
 import cn.lushantingyue.materialdesign_demo.multitype.SimpleViewBinder;
 import io.reactivex.disposables.Disposable;
 import me.drakeet.multitype.MultiTypeAdapter;
-import okhttp3.Interceptor;
 
 /**
- * Created by Administrator on 2018/1/12 16.
- * Responsibilities:
+ * Created by Lushantingyue on 2018/1/12 16.
+ * Responsibilities: fragment分页
  * Description:
  * ProjectName:
  */
 
-public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesListListener, LoadMoreDelegate.LoadMoreSubject {
+public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesListListener,
+        LoadMoreDelegate.LoadMoreSubject, SwipeRefreshDelegate.OnSwipeRefreshListener {
 
     public static final String ARG_PAGE = "ARG_PAGE";
     private int mPage;
@@ -51,6 +50,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     private int curPage = 1;
     private FragmentActivity act;
     private LoadMoreDelegate loadMoreDelegate;
+    private SwipeRefreshDelegate refreshDelegate;
 
     public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -66,18 +66,20 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
         mPage = getArguments().getInt(ARG_PAGE);
         act = getActivity();
         loadMoreDelegate = new LoadMoreDelegate(this);
+        refreshDelegate = new SwipeRefreshDelegate(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page, null);
+        View view = inflater.inflate(R.layout.fragment_list, null);
         lv = (RecyclerView) view.findViewById(R.id.lv);
         // 创建并配置一个线性布局管理器
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         lv.setLayoutManager(layoutManager);
         adapter = new MultiTypeAdapter();
         loadMoreDelegate.attach(lv);
+        refreshDelegate.attach(view);
 
         return view;
     }
@@ -176,4 +178,27 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
         }
     }
 
+    protected void setRefresh(boolean refresh) {
+        refreshDelegate.setRefresh(refresh);
+    }
+
+    protected boolean isShowingRefresh() {
+        return refreshDelegate.isShowingRefresh();
+    }
+
+    protected void setSwipeToRefreshEnabled(boolean enable) {
+        refreshDelegate.setEnabled(enable);
+    }
+
+    @Override
+    public void onSwipeRefresh() {
+        curPage = 1;
+        if (mPage == 1) {
+            if (act instanceof TokenHolder) {
+                TokenHolder activity = (TokenHolder) act;
+                new RemoteData(new TokenInterceptor(activity.getToken()))
+                        .listDataByPage(this, curPage);
+            }
+        }
+    }
 }

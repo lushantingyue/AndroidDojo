@@ -54,6 +54,9 @@ dependencies {
     // 仿微信图片选择器
     compile 'com.lzy.widget:imagepicker:0.6.1'
 
+    compile 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     compile 'me.iwf.photopicker:PhotoPicker:0.9.12@aar'
     compile 'com.android.support:recyclerview-v7:26.1.0'
 
