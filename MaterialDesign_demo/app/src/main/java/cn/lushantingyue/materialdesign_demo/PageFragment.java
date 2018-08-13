@@ -1,5 +1,6 @@
 package cn.lushantingyue.materialdesign_demo;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -57,6 +58,7 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
         args.putInt(ARG_PAGE, page);
         PageFragment pageFragment = new PageFragment();
         pageFragment.setArguments(args);
+
         return pageFragment;
     }
 
@@ -72,16 +74,18 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, null);
-        lv = (RecyclerView) view.findViewById(R.id.lv);
+//        View root = inflater.inflate(R.layout.fragment_page, container, false);
+        View root = inflater.inflate(R.layout.fragment_page, null);
+        lv = root.findViewById(R.id.lv);
+
         // 创建并配置一个线性布局管理器
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         lv.setLayoutManager(layoutManager);
         adapter = new MultiTypeAdapter();
         loadMoreDelegate.attach(lv);
-        refreshDelegate.attach(view);
+        refreshDelegate.attach(root);
 
-        return view;
+        return root;
     }
 
     @Override

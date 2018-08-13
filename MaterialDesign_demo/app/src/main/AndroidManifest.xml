@@ -34,4 +34,12 @@
         </provider>
     </application>
 
+    <!--<supports-screens-->
+        <!--android:anyDensity="true"-->
+        <!--android:largeScreens="true"-->
+        <!--android:normalScreens="true"-->
+        <!--android:resizeable="true"-->
+        <!--android:screenOrientation="portrait"-->
+        <!--android:smallScreens="true" />-->
+
 </manifest>

@@ -26,8 +26,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--android:id="@android:id/list"-->
     <android.support.v7.widget.RecyclerView
-        android:id="@android:id/list"
+        android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="@dimen/list_view_space_left"
@@ -39,6 +40,6 @@
         android:scrollbarSize="2dp"
         android:scrollbarThumbVertical="@color/scrollbar"
         android:scrollbarStyle="outsideOverlay"
-        app:layoutManager="LinearLayoutManager"/>
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
 
 </android.support.v4.widget.SwipeRefreshLayout>
