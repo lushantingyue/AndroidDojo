@@ -124,6 +124,9 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
                 adapter.notifyDataSetChanged();
                 LocalData.loadMusic(music, act);
                 break;
+            case 4:
+                loadTaskList();
+                break;
             default:
                 List<String> list = new ArrayList<String>();
                 for (int i = 0; i < 100; i++) {
@@ -138,6 +141,15 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
                 adapter.notifyDataSetChanged();
                 break;
         }
+    }
+
+    private void loadTaskList() {
+//        adapter.register(TodoList.class, new TodoListBinder());
+//        lv.setAdapter(adapter);
+//
+//        adapter.setItems(task);
+//        adapter.notifyDataSetChanged();
+//        LocalData.loadMusic(task, act);
     }
 
     @Override
