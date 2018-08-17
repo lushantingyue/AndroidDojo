@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     private String token = null;
     private PopupWindow loginPopup;
     private LoginDialog newFragment;
+    private TabLayout slidingTabs;
+
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
             public void onClick(View view) {
 //                Intent intent = new Intent(MainActivity.this, WxChooserActivity.class);
 //                startActivity(intent);
+                // TODO: 图片、相册选择弹窗
                 ImageUtils.showImagePickDialog(act);
             }
         });
@@ -153,9 +157,10 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                 }
             }
         });
-        TabLayout slidingTabs = findViewById(R.id.sliding_tabs);
+        slidingTabs = findViewById(R.id.sliding_tabs);
         NestedScrollView nestedScrollView = findViewById(R.id.nestedScrollView);
-        final ViewPager viewPager = findViewById(R.id.viewpager);
+//        final ViewPager
+                viewPager = findViewById(R.id.viewpager);
         ViewPagerAdapter vpAdapter = new ViewPagerAdapter(getSupportFragmentManager(), act);
         viewPager.setAdapter(vpAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(slidingTabs));
@@ -224,8 +229,10 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     }
 
     // TODO: 2018/6/1   刷新fragment数据 
-    private void refreshPageTab() {
-
+    private void refreshPageTab(int page) {
+//        slidingTabs.getTabAt(0);
+//        viewPager.invalidate();
+        viewPager.setCurrentItem(page, true);
     }
 
     // TODO: 2018/6/1   获取access_token
@@ -300,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
             case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if (resultCode == RESULT_OK) {
                     Toast.makeText(act, "触发上传", Toast.LENGTH_LONG).show();
+                    // TODO：此处会崩
                     ImageUtils.cropImage(this, data.getData());
                 }
                 break;
@@ -366,6 +374,8 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         remoteData = new WeakReference<RemoteData>(new RemoteData(tokenInteceptor));
         ToastUtil.show(act, msg.getMessage() + token);
         dismissLogin();
+        // TODO: token鉴权后刷新数据
+        refreshPageTab(0);
     }
 
     @Override

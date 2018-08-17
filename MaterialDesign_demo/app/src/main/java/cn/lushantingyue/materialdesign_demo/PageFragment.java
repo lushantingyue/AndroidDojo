@@ -62,6 +62,12 @@ public class PageFragment extends Fragment implements BaseModel.OnLoadArticlesLi
         return pageFragment;
     }
 
+    // TODO: 刷新页面数据
+    public void updateArguments(int page) {
+        Bundle args = getArguments();
+        args.putInt(ARG_PAGE, page);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
