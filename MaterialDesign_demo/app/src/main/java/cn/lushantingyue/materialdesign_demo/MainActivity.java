@@ -1,5 +1,7 @@
 package cn.lushantingyue.materialdesign_demo;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -15,8 +17,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +29,11 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
+import com.yanzhenjie.permission.Action;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 import com.yanzhenjie.permission.Rationale;
+import com.yanzhenjie.permission.Setting;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -41,6 +49,7 @@ import cn.lushantingyue.materialdesign_demo.bean.Movie;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
 import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
+import cn.lushantingyue.materialdesign_demo.rationale.RuntimeRationale;
 import cn.lushantingyue.materialdesign_demo.utils.DefaultRationale;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
 import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
@@ -63,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     private ImagePicker imagePicker;
 
     private DefaultRationale mRationale;
-    private PermissionSetting mSetting;
+//    private PermissionSetting mSetting;
     private Rationale mRationaleationale;
     private WeakReference<RemoteData> remoteData;
     private String token = null;
@@ -193,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
 //        AppBarLayout
 
         mRationale = new DefaultRationale();
-        mSetting = new PermissionSetting(act);
+//        mSetting = new PermissionSetting(act);
         remoteData = new WeakReference<RemoteData>(new RemoteData());
     }
 
@@ -286,7 +295,75 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     }
 
     public void showSetting(List<String> permissions) {
-        act.mSetting.showSetting(permissions);
+//        act.mSetting.showSetting(permissions);
+        requestPermission(permissions);
+    }
+
+    /**
+     * Request permissions.
+     */
+    private void requestPermission(String... permissions) {
+        AndPermission.with(this)
+                .runtime()
+                .permission(permissions)
+                .rationale(new RuntimeRationale())
+                .onGranted(new Action<List<String>>() {
+                    @Override
+                    public void onAction(List<String> permissions) {
+                        ToastUtil.show(act, getString(R.string.successfully));
+                    }
+                })
+                .onDenied(new Action<List<String>>() {
+                    @Override
+                    public void onAction(@NonNull List<String> permissions) {
+                        ToastUtil.show(act, getString(R.string.failure));
+                        if (AndPermission.hasAlwaysDeniedPermission(MainActivity.this, permissions)) {
+                            showSettingDialog(MainActivity.this, permissions);
+                        }
+                    }
+                })
+                .start();
+    }
+
+    /**
+     * Display setting dialog.
+     */
+    public void showSettingDialog(Context context, final List<String> permissions) {
+        List<String> permissionNames = Permission.transformText(context, permissions);
+        String message = context.getString(R.string.message_permission_always_failed, TextUtils.join("\n", permissionNames));
+
+        new AlertDialog.Builder(context)
+                .setCancelable(false)
+                .setTitle(R.string.title_dialog)
+                .setMessage(message)
+                .setPositiveButton(R.string.setting, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setPermission();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * Set permissions.
+     */
+    private void setPermission() {
+        AndPermission.with(this)
+                .runtime()
+                .setting()
+                .onComeback(new Setting.Action() {
+                    @Override
+                    public void onAction() {
+                        Toast.makeText(MainActivity.this, R.string.message_setting_comeback, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .start();
     }
 
     public Rationale getRationale() {
