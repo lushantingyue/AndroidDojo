@@ -21,6 +21,7 @@ import cn.lushantingyue.materialdesign_demo.R;
  * ProjectName:
  */
 
+@Deprecated
 public class PermissionSetting {
 
     private final Context mContext;

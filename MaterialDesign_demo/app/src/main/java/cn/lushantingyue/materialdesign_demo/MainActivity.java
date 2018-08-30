@@ -21,11 +21,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lzy.imagepicker.ImagePicker;
@@ -39,6 +41,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import cn.lushantingyue.materialdesign_demo.api.RemoteData;
 import cn.lushantingyue.materialdesign_demo.api.TokenInterceptor;
@@ -50,9 +53,7 @@ import cn.lushantingyue.materialdesign_demo.bean.Status;
 import cn.lushantingyue.materialdesign_demo.main.MainModel;
 import cn.lushantingyue.materialdesign_demo.modules.photopicker.GlideImageLoader;
 import cn.lushantingyue.materialdesign_demo.rationale.RuntimeRationale;
-import cn.lushantingyue.materialdesign_demo.utils.DefaultRationale;
 import cn.lushantingyue.materialdesign_demo.utils.ImageUtils;
-import cn.lushantingyue.materialdesign_demo.utils.PermissionSetting;
 import cn.lushantingyue.materialdesign_demo.utils.ToastUtil;
 import cn.lushantingyue.materialdesign_demo.widget.LoginDialog;
 import cn.lushantingyue.materialdesign_demo.widget.LoginInterface;
@@ -71,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     private CoordinatorLayout root_layout;
     private ImagePicker imagePicker;
 
-    private DefaultRationale mRationale;
 //    private PermissionSetting mSetting;
     private Rationale mRationaleationale;
     private WeakReference<RemoteData> remoteData;
@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         act = this;
+        TextView textview = new TextView(act);
+        textview.setText("abc");
 
         /**
          *  android.support.v7.widget.Toolbar的使用
@@ -201,8 +203,6 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
 //        mCollapsingToolbarLayout.setContentScrim();
 //        AppBarLayout
 
-        mRationale = new DefaultRationale();
-//        mSetting = new PermissionSetting(act);
         remoteData = new WeakReference<RemoteData>(new RemoteData());
     }
 
@@ -294,16 +294,11 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         super.onDestroy();
     }
 
-    public void showSetting(List<String> permissions) {
-//        act.mSetting.showSetting(permissions);
-        requestPermission(permissions);
-    }
-
     /**
      * Request permissions.
      */
     private void requestPermission(String... permissions) {
-        AndPermission.with(this)
+        AndPermission.with(act)
                 .runtime()
                 .permission(permissions)
                 .rationale(new RuntimeRationale())
@@ -317,8 +312,8 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                     @Override
                     public void onAction(@NonNull List<String> permissions) {
                         ToastUtil.show(act, getString(R.string.failure));
-                        if (AndPermission.hasAlwaysDeniedPermission(MainActivity.this, permissions)) {
-                            showSettingDialog(MainActivity.this, permissions);
+                        if (AndPermission.hasAlwaysDeniedPermission(act, permissions)) {
+                            showSettingDialog(permissions);
                         }
                     }
                 })
@@ -328,11 +323,11 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     /**
      * Display setting dialog.
      */
-    public void showSettingDialog(Context context, final List<String> permissions) {
-        List<String> permissionNames = Permission.transformText(context, permissions);
-        String message = context.getString(R.string.message_permission_always_failed, TextUtils.join("\n", permissionNames));
+    public void showSettingDialog(final List<String> permissions) {
+        List<String> permissionNames = Permission.transformText(act, permissions);
+        String message = act.getString(R.string.message_permission_always_failed, TextUtils.join("\n", permissionNames));
 
-        new AlertDialog.Builder(context)
+        new AlertDialog.Builder(act)
                 .setCancelable(false)
                 .setTitle(R.string.title_dialog)
                 .setMessage(message)
@@ -351,23 +346,19 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
     }
 
     /**
-     * Set permissions.
+     * 重新配置权限 permissions.
      */
     private void setPermission() {
-        AndPermission.with(this)
+        AndPermission.with(act)
                 .runtime()
                 .setting()
                 .onComeback(new Setting.Action() {
                     @Override
                     public void onAction() {
-                        Toast.makeText(MainActivity.this, R.string.message_setting_comeback, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(act, R.string.message_setting_comeback, Toast.LENGTH_SHORT).show();
                     }
                 })
                 .start();
-    }
-
-    public Rationale getRationale() {
-        return mRationale;
     }
 
     /**
@@ -383,9 +374,13 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         switch (requestCode) {
             case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if (resultCode == RESULT_OK) {
-                    Toast.makeText(act, "触发上传", Toast.LENGTH_LONG).show();
+                    String path = data.getData().getPath();
+                    Uri uri = data.getData();
+                    com.orhanobut.logger.Logger.e("图片路径\n：%s\nurl：%s\n", path, uri.toString());
+
+                    Toast.makeText(act, "触发上传" + "/// " + path, Toast.LENGTH_LONG).show();
                     // TODO：此处会崩
-                    ImageUtils.cropImage(this, data.getData());
+                    ImageUtils.cropImage(act, data.getData());
                 }
                 break;
             case ImageUtils.REQUEST_CODE_FROM_CUT:
@@ -448,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         this.token = msg.getToken();
         this.remoteData = null;
         TokenInterceptor tokenInteceptor = new TokenInterceptor(token);
-        remoteData = new WeakReference<RemoteData>(new RemoteData(tokenInteceptor));
+        remoteData = new WeakReference<>(new RemoteData(tokenInteceptor));
         ToastUtil.show(act, msg.getMessage() + token);
         dismissLogin();
         // TODO: token鉴权后刷新数据

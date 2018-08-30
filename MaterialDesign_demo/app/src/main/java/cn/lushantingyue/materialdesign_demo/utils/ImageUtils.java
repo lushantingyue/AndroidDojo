@@ -26,9 +26,11 @@ import com.yanzhenjie.permission.Permission;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 import cn.lushantingyue.materialdesign_demo.MainActivity;
 import cn.lushantingyue.materialdesign_demo.R;
+import cn.lushantingyue.materialdesign_demo.rationale.RuntimeRationale;
 
 /**
  * Created by lushantingyue on 2018/2/2.
@@ -59,8 +61,8 @@ public class ImageUtils {
                         dialog.dismiss();
                         switch (which) {
                             case 0:
-                                addPermission(activity, Permission.CAMERA);
-                                pickImageFromCamera(activity);
+                                requestPermissionForAlbumForCamera(activity, Permission.CAMERA);
+//                                pickImageFromCamera(activity);
                                 break;
                             case 1:
                                 requestPermissionForAlbum(activity, Permission.Group.STORAGE);
@@ -74,18 +76,20 @@ public class ImageUtils {
     }
 
     /**
-     * 权限检查
+     * 请求相机权限
      */
-    public static void addPermission(final Activity activity, String... permissions) {
+    public static void requestPermissionForAlbumForCamera(final Activity activity, String... permissions) {
         AndPermission.with(activity)
+                .runtime()
                 .permission(permissions)
-                .rationale(((MainActivity)activity).getRationale())
+                .rationale(new RuntimeRationale())
                 .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> permissions) {
                         List<String> permissionNames = Permission.transformText(activity, permissions);
                         String permissionText = TextUtils.join(",\n", permissionNames);
                         Toast.makeText(activity, "权限请求 成功: " + permissionText, Toast.LENGTH_LONG).show();
+                        pickImageFromCamera(activity);
                     }
                 })
                 .onDenied(new Action<List<String>>() {
@@ -95,19 +99,20 @@ public class ImageUtils {
                         String permissionText = TextUtils.join(",\n", permissionNames);
                         Toast.makeText(activity, "权限请求 失败: " + permissionText, Toast.LENGTH_LONG).show();
                         if (AndPermission.hasAlwaysDeniedPermission(activity, permissions)) {
-                            ((MainActivity)activity).showSetting(permissions);
+                            ((MainActivity)activity).showSettingDialog(permissions);
                         }
                     }
                 }).start();
     }
 
     /**
-     * 权限检查
+     * 请求相册权限
      */
     public static void requestPermissionForAlbum(final Activity activity, String... permissions) {
         AndPermission.with(activity)
+                .runtime()
                 .permission(permissions)
-                .rationale(((MainActivity)activity).getRationale())
+                .rationale(new RuntimeRationale())
                 .onGranted(new Action<List<String>>() {
                     @Override
                     public void onAction(List<String> permissions) {
@@ -124,7 +129,7 @@ public class ImageUtils {
                         String permissionText = TextUtils.join(",\n", permissionNames);
                         Toast.makeText(activity, "权限请求 失败: " + permissionText, Toast.LENGTH_LONG).show();
                         if (AndPermission.hasAlwaysDeniedPermission(activity, permissions)) {
-                            ((MainActivity)activity).showSetting(permissions);
+                            ((MainActivity) activity).showSettingDialog(permissions);
                         }
                     }
                 }).start();
@@ -144,7 +149,7 @@ public class ImageUtils {
             return;
         }
 
-        if(mPhotoFile==null){
+        if(mPhotoFile==null) {
             mPhotoFile = getCameraPhotoFile();
             Intent intent = new Intent();
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -381,14 +386,11 @@ public class ImageUtils {
      */
     public static boolean isSdcardWritable() {
         final String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public static File getCameraPhotoFile() {
-        File path = new File(FileUtils.getImageFileDir());
+        File path = new File(Objects.requireNonNull(FileUtils.getImageFileDir()));
         if (!path.exists()) {
             path.mkdirs();
         }

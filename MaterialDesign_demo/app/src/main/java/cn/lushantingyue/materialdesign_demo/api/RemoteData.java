@@ -183,6 +183,7 @@ public class RemoteData {
 
                     @Override
                     public void onError(Throwable e) {
+                        // file not found exception
                         listener.onFailure("上传错误" + e.getMessage(), new Exception("retrofit request erro."));
                     }
 
