@@ -8,12 +8,15 @@ import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.LoginBean;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
 import cn.lushantingyue.materialdesign_demo.main.MainModel;
+import cn.lushantingyue.materialdesign_demo.utils.Constant;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 /**
@@ -166,8 +169,12 @@ public class RemoteData {
 //
 //    }
 
-    public void uploadPhoto(final MainModel.OnUploadPhotoListener listener, final RequestBody file) {
-        Observable<Status> observable = service.upload(file);
+    // TODO: 图片上传
+//    public void uploadPhoto(final MainModel.OnUploadPhotoListener listener, final RequestBody file) {
+        public void uploadPhoto(final MainModel.OnUploadPhotoListener listener, final MultipartBody.Part file) {
+//        Observable<Status> observable = service.upload(file);
+        RequestBody member_id = RequestBody.create(MediaType.parse("text/plain"), Constant.USER_MEMBER_ID);
+        Observable<Status> observable = service.uploadPic(member_id, file);
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Status>() {

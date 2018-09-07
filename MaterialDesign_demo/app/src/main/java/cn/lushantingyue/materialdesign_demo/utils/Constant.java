@@ -9,6 +9,8 @@ package cn.lushantingyue.materialdesign_demo.utils;
 
 public class Constant {
 
+    public static final byte[] USER_MEMBER_ID = new byte[16];
+
     static String api = "http://192.168.2.30:3000/"; // 连内网使用
     static String wifi_work = "http://192.168.191.1:3000/";
     static String wifi = "http://192.168.155.1:3000/"; // 连本机wifi使用

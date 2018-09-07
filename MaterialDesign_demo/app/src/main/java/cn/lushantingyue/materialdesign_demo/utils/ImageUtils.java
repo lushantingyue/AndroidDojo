@@ -20,6 +20,7 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.orhanobut.logger.Logger;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.Permission;
@@ -40,6 +41,8 @@ public class ImageUtils {
     public static final int REQUEST_CODE_FROM_CAMERA = 5001;
     public static final int REQUEST_CODE_FROM_ALBUM = 5002;
     public static final int REQUEST_CODE_FROM_CUT = 5003;
+
+    public static final int REQUEST_CODE_DIRECT_UPLOAD = 5000;
 
     /**
      * 存放拍照图片的uri地址
@@ -149,13 +152,15 @@ public class ImageUtils {
             return;
         }
 
-        if(mPhotoFile==null) {
+        if(mPhotoFile == null) {
             mPhotoFile = getCameraPhotoFile();
             Intent intent = new Intent();
             intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
 
             // 兼容 Android7.0文件分享策略
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); //添加这一句表示对目标应用临时授权该Uri所代表的文件
+
 //            android:authorities="cn.lushantingyue.materialdesign_demo.file_provider"
                 Uri photoOutputUri = FileProvider.getUriForFile(
                         activity,
@@ -165,6 +170,7 @@ public class ImageUtils {
             } else {
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
             }
+
             activity.startActivityForResult(intent, REQUEST_CODE_FROM_CAMERA);
         }
     }
@@ -190,22 +196,30 @@ public class ImageUtils {
             Toast.makeText(activity, R.string.no_sdcard, Toast.LENGTH_SHORT).show();
             return;
         }
+        // 裁剪图片的临时存放目录
         if (mPhotoFile == null) {
             mPhotoFile = getCameraPhotoFile();
         }
+        // 根据Uri获取图片绝对路径, 兼容API19以上的Uri转换
         String absolutePath19 = getImageAbsolutePath19(activity, uri);
+
+        Uri photoInputUri; // 原始路径
+
         // 裁剪图片意图
         Intent intent = new Intent("com.android.camera.action.CROP");
         // 兼容 Android7.0文件分享策略
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Uri photoOutputUri = FileProvider.getUriForFile(
+            //添加这一句表示对目标应用临时授权该Uri所代表的文件
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            photoInputUri = FileProvider.getUriForFile(
                     activity,
                     activity.getPackageName() + ".file_provider",
                     new File(absolutePath19));
-            intent.setDataAndType(photoOutputUri, "image/*");
         } else {
-            intent.setDataAndType(Uri.fromFile(new File(absolutePath19)), "image/*");
+            photoInputUri = Uri.fromFile(new File(absolutePath19));
         }
+
+        intent.setDataAndType(photoInputUri, "image/*");
         intent.putExtra("crop", "true");
         // 裁剪框的比例，1：1
         intent.putExtra("aspectX", 1);
@@ -213,22 +227,17 @@ public class ImageUtils {
         // 裁剪后输出图片的尺寸大小
         intent.putExtra("outputX", 250);
         intent.putExtra("outputY", 250);
+        // 图片格式
+        intent.putExtra("outputFormat", "JPEG");
+        // 取消人脸识别
+        intent.putExtra("noFaceDetection", true); // no face detection
+
+        // 裁剪处理后的临时URI
+        Uri tempUri = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
 
         // 兼容 Android7.0文件分享策略
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            android:authorities="cn.lushantingyue.materialdesign_demo.file_provider"
-            Uri photoOutputUri = FileProvider.getUriForFile(
-                    activity,
-                    activity.getPackageName() + ".file_provider",
-                    mPhotoFile);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoOutputUri);
-        } else {
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
-        }
-
-        intent.putExtra("return-data", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        intent.putExtra("noFaceDetection", true); // no face detection
 
         // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_CUT
         activity.startActivityForResult(intent, REQUEST_CODE_FROM_CUT);
@@ -283,34 +292,34 @@ public class ImageUtils {
 //        else
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                 && DocumentsContract.isDocumentUri(context, imageUri)) {
-            if (isExternalStorageDocument(imageUri)) {
-                String docId = DocumentsContract.getDocumentId(imageUri);
-                String[] split = docId.split(":");
-                String type = split[0];
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                if (isExternalStorageDocument(imageUri)) {
+                    String docId = DocumentsContract.getDocumentId(imageUri);
+                    String[] split = docId.split(":");
+                    String type = split[0];
+                    if ("primary".equalsIgnoreCase(type)) {
+                        return Environment.getExternalStorageDirectory() + "/" + split[1];
+                    }
+                } else if (isDownloadsDocument(imageUri)) {
+                    String id = DocumentsContract.getDocumentId(imageUri);
+                    Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    return getDataColumn(context, contentUri, null, null);
+                } else if (isMediaDocument(imageUri)) {
+                    String docId = DocumentsContract.getDocumentId(imageUri);
+                    String[] split = docId.split(":");
+                    String type = split[0];
+                    Uri contentUri = null;
+                    if ("image".equals(type)) {
+                        contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("video".equals(type)) {
+                        contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                    } else if ("audio".equals(type)) {
+                        contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    }
+                    String selection = MediaStore.Images.Media._ID + "=?";
+                    String[] selectionArgs = new String[]{split[1]};
+                    return getDataColumn(context, contentUri, selection, selectionArgs);
                 }
-            } else if (isDownloadsDocument(imageUri)) {
-                String id = DocumentsContract.getDocumentId(imageUri);
-                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                return getDataColumn(context, contentUri, null, null);
-            } else if (isMediaDocument(imageUri)) {
-                String docId = DocumentsContract.getDocumentId(imageUri);
-                String[] split = docId.split(":");
-                String type = split[0];
-                Uri contentUri = null;
-                if ("image".equals(type)) {
-                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                } else if ("video".equals(type)) {
-                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                } else if ("audio".equals(type)) {
-                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                }
-                String selection = MediaStore.Images.Media._ID + "=?";
-                String[] selectionArgs = new String[] { split[1] };
-                return getDataColumn(context, contentUri, selection, selectionArgs);
             }
-        }
 
         // MediaStore (and general)
         if ("content".equalsIgnoreCase(imageUri.getScheme())) {
@@ -323,6 +332,7 @@ public class ImageUtils {
         else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
             return imageUri.getPath();
         }
+
         return null;
     }
 
@@ -394,6 +404,7 @@ public class ImageUtils {
         if (!path.exists()) {
             path.mkdirs();
         }
+        Logger.i(path + "pic_timestamp.jpg");
         return new File(path, "pic_" + System.currentTimeMillis() + ".jpg");
     }
 

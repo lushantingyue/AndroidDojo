@@ -59,6 +59,7 @@ import cn.lushantingyue.materialdesign_demo.widget.LoginDialog;
 import cn.lushantingyue.materialdesign_demo.widget.LoginInterface;
 import io.reactivex.disposables.Disposable;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 public class MainActivity extends AppCompatActivity implements MainModel.OnUploadPhotoListener, BaseModel.LoginListener
@@ -380,11 +381,14 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
 
                     Toast.makeText(act, "触发上传" + "/// " + path, Toast.LENGTH_LONG).show();
                     // TODO：此处会崩
-                    ImageUtils.cropImage(act, data.getData());
+                    ImageUtils.cropImage(act, uri);
+
+                    // TODO：直接上传原图
+//                    ImageUtils.originImage(act, data.getData());
                 }
                 break;
             case ImageUtils.REQUEST_CODE_FROM_CUT:
-                // 从剪切图片返回的数据
+                // TODO: 从剪切图片返回的数据
                 if (null != ImageUtils.mPhotoFile) {
 //                    if (resultCode == RESULT_OK) {
                         ImageUtils.scanMediaJpegFile(act, ImageUtils.mPhotoFile, new MediaScannerConnection.OnScanCompletedListener() {
@@ -397,9 +401,20 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
                                         if (path == null) {
                                             ToastUtil.show(act,"图片未找到");
                                         } else {
+                                            String filePath = "/storage/sdcard0/Pictures/Screenshots/S60911-224349.jpg";
+                                            File picfile = new File(filePath);
+
                                             File file = new File(path);
-                                            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-                                            remoteData().uploadPhoto(act, requestBody);
+                                            String name = file.getName();
+                                            com.orhanobut.logger.Logger.i(path);
+//                                            RequestBody requestBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                                            RequestBody photoRequestBody = RequestBody.create(MediaType.parse("image/png"), file);
+                                            MultipartBody.Part photo = MultipartBody.Part.createFormData("pic", file.getName(), photoRequestBody);//pic为key
+                                            // TODO： file not found exception 未找到图片错误
+                                            remoteData().uploadPhoto(act, photo);
+
+                                            // 确定 or 取消上传, 都要清空 File
+                                            ImageUtils.mPhotoFile = null;
                                         }
                                     }
                                 });
@@ -408,14 +423,18 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
 //                    } else {
 //                        ImageUtils.mPhotoFile.delete();
 //                    }
-                    // 确定 or 取消上传, 都要清空 File
-                    ImageUtils.mPhotoFile = null;
+
                 } else {
                     ToastUtil.show(act, "图片未找到");
                 }
                 break;
             case ImageUtils.REQUEST_CODE_FROM_CAMERA:
                 //
+                if (resultCode == RESULT_OK) {
+                    if (ImageUtils.mPhotoFile == null) {
+
+                    }
+                }
                 break;
             default:
                 break;

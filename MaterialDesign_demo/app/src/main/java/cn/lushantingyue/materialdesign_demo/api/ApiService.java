@@ -8,6 +8,7 @@ import cn.lushantingyue.materialdesign_demo.bean.Articles;
 import cn.lushantingyue.materialdesign_demo.bean.LoginBean;
 import cn.lushantingyue.materialdesign_demo.bean.Status;
 import io.reactivex.Observable;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -55,4 +56,10 @@ public interface ApiService {
     @POST("upload/pic")
 //    form-data; name="file"; filename=""
     Observable<Status> upload (@Part("file\"; filename=\"test.jpg\"") RequestBody img);
+
+    // TODO:  图片上传2
+    @Multipart
+    @POST("upload/pic")
+    Observable<Status> uploadPic(@Part("member_id") RequestBody member_id, @Part MultipartBody.Part pic);
+
 }
