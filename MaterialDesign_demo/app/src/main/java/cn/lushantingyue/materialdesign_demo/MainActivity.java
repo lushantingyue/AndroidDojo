@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -13,6 +14,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -375,14 +377,19 @@ public class MainActivity extends AppCompatActivity implements MainModel.OnUploa
         switch (requestCode) {
             case ImageUtils.REQUEST_CODE_FROM_ALBUM:
                 if (resultCode == RESULT_OK) {
-                    String path = data.getData().getPath();
-                    Uri uri = data.getData();
-                    com.orhanobut.logger.Logger.e("图片路径\n：%s\nurl：%s\n", path, uri.toString());
+                    Uri newUri = Uri.parse(ImageUtils.getPath(act, data.getData()));
+//                    String path = data.getData().getPath();
+//                    Uri uri = data.getData();
+//                    com.orhanobut.logger.Logger.e("图片路径\n：%s\nurl：%s\n", path, uri.toString());
 
-                    Toast.makeText(act, "触发上传" + "/// " + path, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(act, "触发上传" + "/// " + path, Toast.LENGTH_LONG).show();
                     // TODO：此处会崩
-                    ImageUtils.cropImage(act, uri);
+//                    ImageUtils.cropImage(act, uri);
 
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        newUri = FileProvider.getUriForFile(this, "com.donkor.demo.takephoto.fileprovider", new File(newUri.getPath()));
+                    // 裁剪图片
+                    ImageUtils.cropImage(this, newUri);
                     // TODO：直接上传原图
 //                    ImageUtils.originImage(act, data.getData());
                 }
